@@ -3,19 +3,21 @@
 <br />
 <div align="center">
   <a href="https://github.com/suhailkakar/Decentralized-YouTube">
-    <img src="https://raw.githubusercontent.com/suhailkakar/Decentralized-YouTube/version-1/logo.png" alt="Logo" width="110" height="80">
+    <img src="https://ml.globenewswire.com/Resource/Download/187e27e0-700e-4e94-adba-89cc74833eb7" alt="Logo" height="100">
+  </a>
+  <p> & </p>
+  <a href="https://github.com/suhailkakar/Decentralized-YouTube">
+    <img src="https://mms.businesswire.com/media/20220105005146/en/1318374/22/wordmark_black.jpg" alt="Logo"  height="100">
   </a>
 
-<h3 align="center">OurTube — It is YouTube but decentralized</h3>
+<h3 align="center">CyberTube — A decentralized video sharing platform built on CyberConnect using Livepeer.</h3>
 
 </div>
 
 ## About The Project
 
-[![Ourtube][product-screenshot]](https://twitter.com/suhailkakar)
 
-CyberTube - A decentralized video sharing platform built on CyberConnect using Livepeer
-                  Create, share and watch videos, without worrying about your privacy.
+CyberTube - A decentralized video sharing platform built on CyberConnect using Livepeer. Create, share and watch videos, without worrying about your privacy.
 ### Built With
 
 - Smart Contracts & Social SDK: CyberConnect
