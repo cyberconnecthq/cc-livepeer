@@ -15,11 +15,16 @@ export default function Header({ search }: IHeader) {
       <div className=" w-1/3	">
         <Link href={"/home"}>
           <Image
-            src="https://raw.githubusercontent.com/suhailkakar/Decentralized-YouTube/version-1/logo.png"
-            alt="Decentralized YouTube"
+            src={"/assets/tube-icon.svg"}
+            alt="CyberTube Logo"
             width={55}
             height={40}
           />
+        </Link>
+        <Link href={"/home"}>
+        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400 text-5xl font-medium	">
+                CyberTube
+        </span>
         </Link>
       </div>
       <div className=" w-1/3 flex justify-center items-center">

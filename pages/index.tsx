@@ -34,9 +34,9 @@ function Landing() {
                 className="text-5xl text-text-light md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4 dark:text-text-dark"
                 data-aos="zoom-y-out"
               >
-                It is YouTube, but{" "}
+                CyberTube, decentralized video sharing platform built on{" "}
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">
-                  Decentralized
+                CyberConnect
                 </span>
               </h1>
               <div className="max-w-3xl mx-auto">

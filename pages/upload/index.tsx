@@ -366,7 +366,7 @@ export default function Upload() {
               ).toFixed()}%`
             : "Upload"}</p>
               </button>
-              {assets?.map((asset) => (
+              {/* {assets?.map((asset) => (
                   <div key={asset.id}>
                     <div>
                       <div>Asset Name: {asset?.name}</div>
@@ -374,7 +374,7 @@ export default function Upload() {
                       <div>IPFS CID: {asset?.storage?.ipfs?.cid ?? 'None'}</div>
                     </div>
                   </div>
-                ))}
+                ))} */}
                 {error && <div>{error.message}</div>}
             </div>
           </div>

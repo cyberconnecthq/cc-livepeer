@@ -19,15 +19,21 @@ const Video: React.FC<IProps> = ({ video, horizontal }) => {
             : "flex flex-col m-5 w-80"
         } `}
       >
-        <img
-          className={
-            horizontal
-              ? "object-cover rounded-lg w-60  "
-              : "object-cover rounded-lg w-full h-40"
-          }
-          src={getImage(video.thumbnailHash)}
-          alt=""
-        />
+       <div>
+          <img
+            className={
+              horizontal
+                ? "object-cover rounded-lg w-60  "
+                : "object-cover rounded-lg w-full h-40"
+            }
+            src={getImage(video.thumbnailHash)}
+            alt=""
+            onError={event => {
+              event.target.src = "/assets/video-unavailable.png"
+              event.onerror = null
+            }}
+          />
+       </div>
         <div className={horizontal && "ml-3  w-80"}>
           <h4 className="text-md font-bold dark:text-white mt-3 text-black text-transform: capitalize">
             {video.title}

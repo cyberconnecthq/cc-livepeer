@@ -13,7 +13,7 @@ export const essenceResponseToVideo = (essence: any) => {
       description: essence.metadata?.description,
       location: essence?.location || "",
       category: essence?.category || 'Other', 
-      thumbnailHash: "QmTppLkJ7X3tCQEPzx1ibKJhYkUDftKVLbaSnYCERmfmD5", // essence.thumbnailHash,
+      thumbnailHash: essence.metadata?.image.length === 46 ? essence.metadata?.image : essence.metadata?.image.split('/').pop() , // essence.thumbnailHash,"QmTppLkJ7X3tCQEPzx1ibKJhYkUDftKVLbaSnYCERmfmD5"
       isAudio: false,
       date: essence.metadata?.issue_date,
       handle: essence.createdBy?.handle,
