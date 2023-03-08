@@ -34,16 +34,6 @@ export default function Home() {
       variables: {
         appID: "cyberconnect-livepeer",
         me: "0xD790D1711A9dCb3970F47fd775f2f9A2f0bCc348",
-        // orderBy: "createdAt",
-        // orderDirection: "desc",
-        // where: {
-        //   ...(query && {
-        //     title_contains_nocase: query,
-        //   }),
-        //   ...(category && {
-        //     category_contains_nocase: category,
-        //   }),
-        // },
       },
       fetchPolicy: "network-only",
     }).then(({ data }) => {

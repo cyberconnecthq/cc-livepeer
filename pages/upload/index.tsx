@@ -130,7 +130,7 @@ export default function Upload() {
 						/* The profile id under which the Essence is registered */
 						profileID: primaryProfile?.profileID,
 						/* Name of the Essence */
-						name: "Post",
+						name: title,
 						/* Symbol of the Essence */
 						symbol: "POST",
 						/* URL for the json object containing data about content and the Essence NFT */
