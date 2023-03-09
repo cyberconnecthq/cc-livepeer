@@ -1,10 +1,12 @@
 import { useContext, useState } from "react";
 import { useMutation } from "@apollo/client";
-import { LOGIN_GET_MESSAGE, LOGIN_VERIFY } from "../graphql";
-import { DOMAIN } from "../constants";
-import { AuthContext } from "../context/auth";
+import { LOGIN_GET_MESSAGE, LOGIN_VERIFY } from "../../graphql";
+import { DOMAIN } from "../../constants";
+import { AuthContext } from "../../context/auth";
 import toast from "react-hot-toast";
-import PrimaryProfileCard from "./Cards/PrimaryProfileCard";
+import PrimaryProfileCard from "../Cards/PrimaryProfileCard";
+import { AiOutlinePlusCircle } from "react-icons/ai";
+import Link from "next/link";
 function SigninBtn() {
 	const { setAccessToken, connectWallet, primaryProfile, checkNetwork } =
 		useContext(AuthContext);
@@ -82,22 +84,12 @@ function SigninBtn() {
 			toast.error( message);
 		}
 	};
-	if (!ccVerified) {
+	
 		return (
 			<button className="signin-btn" onClick={handleOnClick}>
 				Sign in
 			</button>
 		);
-	}
-	return (
-		<div >
-        {primaryProfile && (
-          <div className="">
-            <PrimaryProfileCard {...primaryProfile} />
-          </div>
-        )}
-		</div>
-	);
 }
 
 export default SigninBtn;

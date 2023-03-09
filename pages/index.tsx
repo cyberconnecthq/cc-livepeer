@@ -49,11 +49,11 @@ function Landing() {
                   Create, share and watch videos, without worrying about your privacy.
                 </p>
                 <div className="flex justify-center">
-                  <ConnectButton
+                  {/* <ConnectButton
                     label="Connect Wallet"
                     accountStatus="address"
                     showBalance={false}
-                  />
+                  /> */}
                 </div>
                 <div className="flex justify-center">
                   <SigninBtn />

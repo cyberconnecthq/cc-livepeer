@@ -45,11 +45,9 @@ const PrimaryProfileCard = ({
   return (
     <div className="profile-card w-full">
       <div className="profile-card-img center">
-        <Link href="/posts">
           <div>
-            <Avatar value={handle} size={80} />
+            <Avatar value={handle} style={"character"} size={80} />
           </div>
-        </Link>
         {address && (
           <div className="profile-card-address flex flex-col">
             <div>{`${address.slice(0, 6)}..`}</div>
