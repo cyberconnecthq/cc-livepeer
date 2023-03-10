@@ -12,6 +12,7 @@ export const PRIMARY_PROFILE = gql`
           avatar
           isPrimary
         }
+        
       }
     }
   }
