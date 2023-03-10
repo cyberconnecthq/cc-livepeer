@@ -21,7 +21,7 @@ import {
     const [getNonce] = useMutation(GET_NONCE);
     const [verify] = useMutation(VERIFY);
     const { address } = useAccount()
-    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext)
+    const { isLoggedIn, setIsLoggedIn, setAccessToken } = useContext(AuthContext)
     const { theme, setTheme } = useContext(ThemeContext);
     const provider = useProvider()
   
@@ -70,8 +70,8 @@ import {
         if (!!accessToken && !!refreshToken) {
           window.localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
           window.localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
-  
           window.localStorage.setItem(WALLET_KEY, address!)
+          setAccessToken(accessToken)
           setAuthStatus('authenticated')
           setIsLoggedIn(true)
           return new Promise((resolve) => {

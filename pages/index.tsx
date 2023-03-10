@@ -8,17 +8,13 @@ import CustomConnectButton from "../components/Buttons/CustomConnectButton";
 function Landing() {
   // Creating a function to connect user's wallet
   const { isConnected } = useAccount();
-  const { accessToken, primaryProfile, address, setPrimaryProfile} = useContext(AuthContext);
-  // const [accessToken, setAccessToken] = useState<string | null>(null);
-  // const [primaryProfile, setPrimaryProfile] = useState<any>(null);
-  // const [address, setAddress] = useState<string | null>(null);
-
+  const { accessToken, primaryProfile, address, isLoggedIn} = useContext(AuthContext);
 
   useEffect(() => {
     // Connect user's wallet
     console.log("isConnected", isConnected);
     console.log("accessToken", accessToken);
-    if (isConnected && accessToken !== "") {
+    if (isConnected && accessToken && address && isLoggedIn ) {
       window.location.href = "/home";
     }
   }, [isConnected, primaryProfile]);
