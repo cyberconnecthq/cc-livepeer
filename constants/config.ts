@@ -83,8 +83,8 @@ export const CONNECTOR_MAP = {
     chains,
     options: {
       projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
-      showQrModal: true,
-      // rpc,
+      qrcode: true,
+      rpc,
     },
   }),
   Injected: new InjectedConnector({
