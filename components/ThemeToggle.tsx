@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { BiSun, BiMoon } from "react-icons/bi";
-import { ThemeContext } from "../utils/ThemeContext";
+import { ThemeContext } from "../context/ThemeContext";
 
 const Toggle = () => {
   const { theme, setTheme } = useContext(ThemeContext);

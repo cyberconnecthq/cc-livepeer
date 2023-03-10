@@ -12,6 +12,7 @@ import { IPostCard, IVideo } from '../../types'
 import { essenceResponseToVideo } from "../../utils";
 import { AuthContext } from '../../context/auth'
 import CollectBtn from '../../components/Buttons/CollectBtn'
+import {ESSENCE_APP_ID} from '../../constants'
 
 export default function Video() {
   const router = useRouter()
@@ -48,7 +49,7 @@ export default function Video() {
     apolloClient.query({
       query: GET_ALL_ESSENCE_VIDEOS,
       variables: {
-        appID: 'cyberconnect-livepeer',
+        appID: ESSENCE_APP_ID,
         me: address,
       },
       fetchPolicy: 'network-only',

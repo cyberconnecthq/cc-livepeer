@@ -46,14 +46,14 @@ export default function Header({ search }: IHeader) {
         <Link href="/upload">
           <AiOutlinePlusCircle
             size="35px"
-            className="mr-8 fill-icons-light dark:fill-icons-dark cursor-pointer"
+            className="mr-8 fill-icons-light dark:fill-icons-dark rounded-full cursor-pointer"
             // transition duration-0 ease-in-out rounded-full
           />
         </Link>
         {accessToken && primaryProfile && <Link href="/profile">
         <CgProfile
         size="35px"
-        className="mr-8 fill-icons-light dark:fill-icons-dark cursor-pointer"/>
+        className="mr-8 fill-icons-light dark:fill-icons-dark  rounded-full cursor-pointer"/>
 		    </Link> }
         <Toggle />
         {/* {!accessToken && !primaryProfile && <div className="ml-10">
@@ -66,10 +66,10 @@ export default function Header({ search }: IHeader) {
             showBalance={false}
           />
         </div> */}
-        <div className="ml-10">
+      </div>
+        <div className="ml-10 flex">
           <CustomConnectButton {...primaryProfile} />
         </div>
-      </div>
     </header>
   );
 }

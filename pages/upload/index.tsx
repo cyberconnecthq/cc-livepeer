@@ -371,7 +371,7 @@ export default function Upload() {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className=" border-borderWhiteGray mt-2 h-12  rounded-md border bg-transparent p-2 focus:outline-none dark:border-gray-600  dark:text-white dark:text-[#9CA3AF]"
+                    className="border-borderWhiteGray mt-2 h-12  rounded-md border bg-transparent p-2 focus:outline-none dark:border-gray-600  dark:text-white"
                   >
                     <option>Music</option>
                     <option>Sports</option>

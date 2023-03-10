@@ -14,7 +14,7 @@ import {
   import { apolloClient } from '../clients'
   import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, WALLET_KEY, DOMAIN } from '../constants'
   import { useMutation } from '@apollo/client';
-  import { ThemeContext } from "../utils/ThemeContext";
+  import { ThemeContext } from "./ThemeContext";
   
   
   export function RainbowAuthProvider({ children }: { children: React.ReactNode }) {

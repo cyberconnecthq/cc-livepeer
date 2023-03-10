@@ -1,30 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Background, Video } from "../../components";
 import { Header, Sidebar } from "../../layout";
 import { apolloClient } from "../../clients";
 import { GET_ALL_ESSENCE_VIDEOS } from "../../graphql";
 import { essenceResponseToVideo } from "../../utils";
-
-
-// export interface IVideo {
-//   id: string;
-//   hash: string;
-//   title: string;
-//   description: string;
-//   location: string;
-//   category: string;
-//   thumbnailHash: string;
-//   isAudio: boolean;
-//   date: string;
-//   author: string;
-//   createdAt: BigInt;
-// }
-
+import { AuthContext } from "../../context/auth";
+import { ESSENCE_APP_ID} from "../../constants";
 export default function Home() {
   const [videos, setVideos] = useState<String[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
   const [query, setQuery] = useState<String>("");
   const [category, setCategory] = useState<String>("");
+  const { address } = useContext(AuthContext);
 
 
   const fetchVideos = async () => {
@@ -32,8 +19,8 @@ export default function Home() {
     apolloClient.query({
       query: GET_ALL_ESSENCE_VIDEOS,
       variables: {
-        appID: "cyberconnect-livepeer",
-        me: "0xD790D1711A9dCb3970F47fd775f2f9A2f0bCc348",
+        appID: ESSENCE_APP_ID,
+        me: address,
       },
       fetchPolicy: "network-only",
     }).then(({ data }) => {

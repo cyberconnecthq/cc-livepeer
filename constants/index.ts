@@ -1,7 +1,6 @@
 const APP_NAME = 'CyberTube'
 const APP_DESCRIPTION = 'A decentralized video sharing platform'
 const APP_VERSION = '0.0.1'
-const CONTRACT_ADDRESS = '0xa0b98Bf623Ac0E88eD2418b0427ADA7FE94cad8d';
 const IPFS_GATEWAY = 'https://cyberconnect.mypinata.cloud/ipfs/';
 const IMAGEKIT_URL = 'https://ik.imagekit.io/' + process.env.NEXT_PUBLIC_IMAGEKIT_ID + '/';
 const LIVEPEER_KEY = process.env.NEXT_PUBLIC_LIVEPEER_KEY;
@@ -15,7 +14,6 @@ export {
   APP_NAME,
   APP_DESCRIPTION,
   APP_VERSION,
-  CONTRACT_ADDRESS,
   IPFS_GATEWAY,
   IMAGEKIT_URL,
   GRAPHQL_URI,

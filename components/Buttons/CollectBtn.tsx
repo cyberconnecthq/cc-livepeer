@@ -37,32 +37,9 @@ function CollectBtn({
 			/* Get the signer from the provider */
 			const signer = provider.getSigner();
 
-			// const ERC20Contract = new ethers.Contract(
-			// 	"0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
-			// 	ERC20ABI,
-			// 	signer
-			// );
-
 			/* Get the address from the provider */
 			const address = await signer.getAddress();
 
-			// if (collectMw) {
-			//   console.log("collectMw", collectMw.contractAddress);
-			//   const allowance = await ERC20Contract.allowance(
-			//     "0x370CA01D7314e3EEa59d57E343323bB7e9De24C6",
-			//     collectMw.contractAddress
-			//   );
-			//   console.log("allowance", allowance.toString());
-			//   let needApprove = allowance.gte(BigNumber.from("10000000000000000000"));
-			//   console.log("needApprove", needApprove);
-			// }
-			// return;
-			//
-			// await ERC20Contract.approve(
-			//   "0x415648c28adb31629418498264f55d54e4c324db",
-			//   "10000000000000000000"
-			// );
-			//
 			/* Get the network from the provider */
 			const network = await provider.getNetwork();
 
