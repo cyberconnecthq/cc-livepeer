@@ -96,7 +96,7 @@ export default function Video() {
               <div>
                 <div className="mt-5 flex flex-row items-center ">
                   <div className="w-12">
-                    <Avvvatars value={video.handle} size={50} />
+                    <Avvvatars value={video?.handle} size={50} />
                   </div>
                   <div className="ml-3 flex flex-col">
                     <p className="text-md mt-1 flex items-center text-black dark:text-white">
