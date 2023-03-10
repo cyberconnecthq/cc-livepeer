@@ -111,6 +111,7 @@ function CollectBtn({
 			/* Display error message */
 			const message = error.message as string;
 			toast.error(message)
+			
 		}
 	};
 

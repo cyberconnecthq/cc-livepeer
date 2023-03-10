@@ -6,7 +6,6 @@ import { useAsset, useCreateAsset } from '@livepeer/react'
 import { UploadInput, Background } from '../../components'
 import { pinFileToIPFS } from '../../utils'
 import toast from 'react-hot-toast'
-import RegisterEssence from '../../hooks/createEssence'
 import { IEssenceMetadata, IRegisterEssenceVideo, Media, Attribute, IMiddlewareProps} from '../../types'
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { pinJSONToIPFS, getEssenceSVGData } from "../../utils";
@@ -48,8 +47,8 @@ export default function Upload() {
   const [thumbnail, setThumbnail] = useState<File>()
   const [uploadData, setUploadData] = useState({})
   const [video, setVideo] = useState<File>()
-  const [videoProgress, setVideoProgress] = useState([]);
-  const [thumbnailCID, setThumbnailCID] = useState<string>('');
+  const [videoProgress, setVideoProgress] = useState<any>([]);
+  const [thumbnailCID, setThumbnailCID] = useState<any>('');
   const thumbnailRef = useRef<HTMLInputElement>(null);
   const [showMiddleware, setShowMiddleware] = useState<boolean>(false);
   const [middleware, setMiddleware] = useState<IMiddlewareProps>(defaultMiddleware)
@@ -227,7 +226,7 @@ export default function Upload() {
   console.log('progress:', progress);
 
   useEffect(() => {
-    if (progress && progress.length) setVideoProgress(progress[0]);
+    if (progress && progress.length) setVideoProgress(progress?.[0]);
   }, [progress]);
  // UseEffect to save the video to the blockchain
   useEffect(() => {
@@ -281,23 +280,6 @@ export default function Upload() {
     if (thumbnailCID) {
       setThumbnailCID(thumbnailCID);
     }
-    
-    // Creating a object to store the metadata
-    // let data: IRegisterEssenceVideo = {
-    //   video: assets?.playbackUrl,
-    //   title,
-    //   description,
-    //   location,
-    //   category,
-    //   thumbnail: String(thumbnailCID),
-    //   UploadedDate: Date.now().toString(),
-    //   middleware: "free"
-    // };
-    // console.log("register essence data:", data)
-    // // Calling the saveVideo function and passing the metadata object
-    // console.log('data:', data);
-    // setUploadData(data);
-    // await saveVideo(data);
   };
 
   // Function to upload the video to IPFS
@@ -313,13 +295,6 @@ export default function Upload() {
     // Calling the createAsset function from the useCreateAsset hook to upload the video
     createAsset?.();
   };
-
-  // Function to save the video to the Contract
-  // const saveVideo = async (data: IRegisterEssenceVideo) => {    
-  //   // Upload the video to the contract
-  //   const relayActionId = await RegisterEssence(data);
-  //   return relayActionId
-  // };
 
   return (
     <Background>

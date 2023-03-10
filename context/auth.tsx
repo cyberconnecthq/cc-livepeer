@@ -161,7 +161,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 		if (address && indexingPosts?.length) {
 			sync();
 		}
-	}, [indexingPosts, address, getRelayActionStatus]);
+	}, [indexingPosts, address]);
 
 	useEffect(() => {
 		const accessToken = localStorage.getItem("accessToken");

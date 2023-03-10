@@ -15,7 +15,7 @@ import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from 'wagmi/providers/public'
 
-bsc.name = 'BNB Chain'
+// bsc.name = 'BNB Chain'
 export const availableChains = [bsc, bscTestnet]; // mainnet, goerli
 
 const NODEREAL_RPCS = {
@@ -38,10 +38,11 @@ const NODEREAL_RPCS = {
 }
 const rpc = {
   // [mainnet.id]: NODEREAL_RPCS[mainnet.id].http,
-  [goerli.id]: NODEREAL_RPCS[goerli.id].http,
+  // [goerli.id]: NODEREAL_RPCS[goerli.id].http,
   [bsc.id]: NODEREAL_RPCS[bsc.id].http,
-  // [bscTestnet.id]: NODEREAL_RPCS[bscTestnet.id].http,
+  [bscTestnet.id]: NODEREAL_RPCS[bscTestnet.id].http,
 }
+
 const providers = [
   jsonRpcProvider({
     rpc: (chain: Chain) => {
@@ -55,7 +56,7 @@ const providers = [
   }),
   publicProvider(),
 ]
-
+// @ts-ignore: Unreachable code error
 export const { chains, provider, webSocketProvider } = configureChains(availableChains, providers)
 
 const connectors = connectorsForWallets([
@@ -81,8 +82,9 @@ export const CONNECTOR_MAP = {
   WalletConnect: new WalletConnectConnector({
     chains,
     options: {
-      qrcode: true,
-      rpc,
+      projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+      showQrModal: true,
+      // rpc,
     },
   }),
   Injected: new InjectedConnector({

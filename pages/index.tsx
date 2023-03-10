@@ -4,11 +4,11 @@ import { useAccount } from "wagmi";
 import { PRIMARY_PROFILE } from "../graphql";
 import { useCancellableQuery } from "../hooks/useCancellableQuery";
 import { AuthContext } from "../context/auth";
-import {SigninBtn} from "../components";
+import CustomConnectButton from "../components/Buttons/CustomConnectButton";
 function Landing() {
   // Creating a function to connect user's wallet
   const { isConnected } = useAccount();
-  const { accessToken, primaryProfile, address, setPrimaryProfile, connectWallet} = useContext(AuthContext);
+  const { accessToken, primaryProfile, address, setPrimaryProfile} = useContext(AuthContext);
   // const [accessToken, setAccessToken] = useState<string | null>(null);
   // const [primaryProfile, setPrimaryProfile] = useState<any>(null);
   // const [address, setAddress] = useState<string | null>(null);
@@ -49,14 +49,9 @@ function Landing() {
                   Create, share and watch videos, without worrying about your privacy.
                 </p>
                 <div className="flex justify-center">
-                  {/* <ConnectButton
-                    label="Connect Wallet"
-                    accountStatus="address"
-                    showBalance={false}
-                  /> */}
                 </div>
                 <div className="flex justify-center">
-                  <SigninBtn />
+                  <ConnectButton/>
                   </div>
               </div>
             </div>

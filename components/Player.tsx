@@ -32,26 +32,24 @@ const Player: React.FC<PlayerProps> = ({ id }) => {
     );
     
   } catch (error) {
-    const plyrProps = {
-      // https://github.com/sampotts/plyr#the-source-setter
-      source: {
-        type: 'video',
-        title: 'Example title',
-        sources: [
-          {
-            src: '/assets/video-not-found.mp4',
-            type: 'video/mp4',
-            size: 720,
-          },
-        ],
-      }, 
-      options: {
-        autoplay: true,
-      }, // https://github.com/sampotts/plyr#options
-      // Direct props for inner video tag (mdn.io/video)
-    }
     return (
-      <Plyr {...plyrProps} />
+      <Plyr
+        source={{
+          type: "video",
+          title: 'Example title',
+          sources: [
+            {
+              src: '/assets/video-not-found.mp4',
+              type: "video/mp4",
+              size: 720,
+            },
+          ],
+        }}
+        options={{
+          autoplay: true,
+        }}
+        autoPlay={true}
+      />
     )
   }
   

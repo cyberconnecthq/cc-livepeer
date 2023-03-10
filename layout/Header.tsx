@@ -2,7 +2,7 @@ import React, {useContext} from "react";
 import { AiOutlinePlusCircle, AiOutlineAntDesign } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import Link from "next/link";
-import { SigninBtn, Toggle } from "../components";
+import { Toggle } from "../components";
 import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import CustomConnectButton  from "../components/Buttons/CustomConnectButton";
@@ -56,9 +56,9 @@ export default function Header({ search }: IHeader) {
         className="mr-8 fill-icons-light dark:fill-icons-dark cursor-pointer"/>
 		    </Link> }
         <Toggle />
-        {!accessToken && !primaryProfile && <div className="ml-10">
+        {/* {!accessToken && !primaryProfile && <div className="ml-10">
           <SigninBtn />
-          </div>}
+          </div>} */}
         {/* <div className="ml-10">
           <ConnectButton
             label="Connect Wallet"

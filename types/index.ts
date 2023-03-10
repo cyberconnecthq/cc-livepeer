@@ -25,6 +25,7 @@ export interface IVideo {
   date: string;
   author: string;
   createdAt: BigInt;
+  handle: string;
 }
 
 

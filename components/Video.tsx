@@ -29,10 +29,14 @@ const Video: React.FC<IProps> = ({ video, horizontal }) => {
             }
             src={getImage(video.thumbnailHash)}
             alt=""
-            onError={event => {
-              event.target.src = "/assets/video-unavailable.png"
-              event.onerror = null
+            onError={(event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+              event.currentTarget.src = "/assets/video-unavailable.png";
+              event.currentTarget.onerror = null;
             }}
+            // onError={event => {
+            //   event.target.src = "/assets/video-unavailable.png"
+            //   event.onerror = null
+            // }}
           />
        </div>
         <div className={horizontal && "ml-3  w-80"}>

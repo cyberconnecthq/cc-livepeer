@@ -12,7 +12,7 @@ export default function Profile() {
   const [loading, setLoading] = useState<Boolean>(true);
   const [query, setQuery] = useState<String>("");
   const [category, setCategory] = useState<String>("");
-  const { accessToken, primaryProfile, address, setPrimaryProfile, connectWallet} = useContext(AuthContext);
+  const { address} = useContext(AuthContext);
 
   const fetchMyVideos = async () => {
     setLoading(true);
