@@ -1,8 +1,9 @@
 import { gql } from "@apollo/client";
 
 
-export const ESSENCE_BY_ID = gql`query EssenceById($metadataId:String!) {
+export const ESSENCE_BY_ID = gql`query EssenceById($metadataId:String!, $me: AddressEVM!) {
     essenceByFilter(metadataID:$metadataId) {
+    isCollectedByMe(me: $me)
     essenceID
     tokenURI
     name

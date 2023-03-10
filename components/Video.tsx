@@ -1,3 +1,4 @@
+import moment from "moment";
 import Link from "next/link";
 import React from "react";
 import { BiCheck } from "react-icons/bi";
@@ -40,7 +41,7 @@ const Video: React.FC<IProps> = ({ video, horizontal }) => {
           </h4>
           {horizontal && (
             <p className="text-sm flex items-center text-subtitle-light mt-1">
-              {video.category} • March 7, 2022
+              {video.category} • {moment(Date.parse(video.date)).fromNow()}
             </p>
           )}
           <p className="text-sm flex items-center text-subtitle-light mt-1">

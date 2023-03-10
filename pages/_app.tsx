@@ -24,110 +24,28 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
 import { AuthContextProvider } from "../context/auth";
+import { RainbowAuthProvider } from "../context/RainbowAuthProvider";
+import {chains, client as wagmiClient} from '../constants/config'
+import { NextUIProvider } from '@nextui-org/react';
 
-export const availableChains = [bsc, bscTestnet]; // mainnet, goerli
 
-const NODEREAL_RPCS = {
-  [mainnet.id]: {
-    http: `https://eth-mainnet.nodereal.io/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
-  },
-  [goerli.id]: {
-    http: `https://eth-goerli.nodereal.io/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
-  },
-  [bsc.id]: {
-    http: `https://bsc-mainnet.nodereal.io/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
-  },
-  [bscTestnet.id]: {
-    http: `https://bsc-testnet.nodereal.io/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
-  },
-};
-const rpc = {
-  // [mainnet.id]: NODEREAL_RPCS[mainnet.id].http,
-  [goerli.id]: NODEREAL_RPCS[goerli.id].http,
-  [bsc.id]: NODEREAL_RPCS[bsc.id].http,
-  // [bscTestnet.id]: NODEREAL_RPCS[bscTestnet.id].http,
-};
-
-const providers = [
-  jsonRpcProvider({
-    rpc: (chain) => {
-      if (
-        chain.id === mainnet.id ||
-        chain.id === goerli.id ||
-        chain.id === bsc.id ||
-        chain.id === bscTestnet.id
-      ) {
-        return {
-          http: NODEREAL_RPCS[chain.id].http,
-        };
-      }
-      return null;
-    },
-  }),
-  publicProvider(),
-];
-
-export const { chains, provider, webSocketProvider } = configureChains(
-  availableChains,
-  providers
-);
-
-const connectors = connectorsForWallets([
-  {
-    groupName: "Suggested",
-    wallets: [
-      injectedWallet({ chains }),
-      metaMaskWallet({ chains }),
-      walletConnectWallet({ chains }),
-      rainbowWallet({ chains }),
-      coinbaseWallet({ chains, appName: "CyberConnect" }),
-      // argentWallet({ chains }),
-      trustWallet({ chains }),
-    ],
-  },
-]);
-
-export const CONNECTOR_MAP = {
-  MetaMask: new MetaMaskConnector({
-    chains,
-    options: { shimDisconnect: false, shimChainChangedDisconnect: true },
-  }),
-  WalletConnect: new WalletConnectConnector({
-    chains,
-    options: {
-      qrcode: true,
-      rpc,
-    },
-  }),
-  Injected: new InjectedConnector({
-    chains,
-    options: {
-      name: "Injected",
-    },
-  }),
-};
-
-export const wagmiClient = createClient({
-  autoConnect: true,
-  provider,
-  webSocketProvider,
-  connectors,
-});
 
 function MyApp({ Component, pageProps }) {
   return (
 
-            <ApolloProvider client={apolloClient}>
+    <ApolloProvider client={apolloClient}>
     <AuthContextProvider>
       <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains}>
           <ThemeProvider>
+        <RainbowAuthProvider>
               <LivepeerConfig client={LivePeerClient}>
-                <Component {...pageProps} />
+                <NextUIProvider>
+                  <Component {...pageProps} />
+                  </NextUIProvider>
                 <Toaster />
               </LivepeerConfig>
+        </RainbowAuthProvider>
           </ThemeProvider>
-        </RainbowKitProvider>
       </WagmiConfig>
     </AuthContextProvider>
             </ApolloProvider>

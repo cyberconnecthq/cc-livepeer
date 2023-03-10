@@ -2,10 +2,7 @@ import { useContext, useState } from "react";
 import { useMutation } from "@apollo/client";
 import { CREATE_COLLECT_ESSENCE_TYPED_DATA, RELAY } from "../../graphql";
 import { AuthContext } from "../../context/auth";
-import { ModalContext } from "../../context/modal";
-import { ethers, BigNumber } from "ethers";
-import ERC20ABI from "../../abi/ERC20.json";
-
+import toast from "react-hot-toast";
 function CollectBtn({
 	profileID,
 	essenceID,
@@ -18,7 +15,6 @@ function CollectBtn({
 	collectMw: Record<string, any>;
 }) {
 	const { accessToken, connectWallet, checkNetwork } = useContext(AuthContext);
-	const { handleModal } = useContext(ModalContext);
 	const [createCollectEssenceTypedData] = useMutation(
 		CREATE_COLLECT_ESSENCE_TYPED_DATA
 	);
@@ -110,11 +106,11 @@ function CollectBtn({
 			setStateCollect(true);
 
 			/* Display success message */
-			handleModal("success", "Post was collected!");
+			toast.success("Post was collected!");
 		} catch (error) {
 			/* Display error message */
 			const message = error.message as string;
-			handleModal("error", message);
+			toast.error(message)
 		}
 	};
 

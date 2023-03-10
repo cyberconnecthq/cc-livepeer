@@ -18,6 +18,8 @@ import {
 import { useCancellableQuery } from "../hooks/useCancellableQuery";
 import { timeout } from "../utils";
 import { useLazyQuery } from "@apollo/client";
+import { useAccount } from "wagmi";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, WALLET_KEY, DOMAIN } from '../constants'
 
 export const AuthContext = createContext<IAuthContext>({
 	address: undefined,
@@ -29,7 +31,6 @@ export const AuthContext = createContext<IAuthContext>({
 	postCount: 0,
 	posts: [],
 	profiles: [],
-	setAddress: () => { },
 	setAccessToken: () => { },
 	setPrimaryProfile: () => { },
 	setIndexingProfiles: () => { },
@@ -40,6 +41,8 @@ export const AuthContext = createContext<IAuthContext>({
 	setProfiles: () => { },
 	connectWallet: async () => new Promise(() => { }),
 	checkNetwork: async () => new Promise(() => { }),
+	isLoggedIn: false,
+	setIsLoggedIn: () => { },
 });
 AuthContext.displayName = "AuthContext";
 
@@ -52,7 +55,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	const [provider, setProvider] = useState<Web3Provider | undefined>(undefined);
 
 	/* State variable to store the address */
-	const [address, setAddress] = useState<string | undefined>(undefined);
+	// const [address, setAddress] = useState<string | undefined>(undefined);
 
 	/* State variable to store the access token */
 	const [accessToken, setAccessToken] = useState<string | undefined>(undefined);
@@ -80,6 +83,22 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	/* State variable to store the profiles */
 	const [profiles, setProfiles] = useState<IAccountCard[]>([]);
 	const [getRelayActionStatus] = useLazyQuery(RELAY_ACTION_STATUS);
+
+	const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>(undefined)
+	
+	const { address, status } = useAccount({
+		onDisconnect() {
+		  setIsLoggedIn(false)
+		},
+	  })
+	  useEffect(() => {
+		setIsLoggedIn(
+		  address &&
+			status === 'connected' &&
+			!!window.localStorage[ACCESS_TOKEN_KEY] &&
+			window.localStorage[WALLET_KEY] == address,
+		)
+	  }, [address, status])
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -151,7 +170,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 		console.log("setting access token and address", accessToken, address);
 		if (accessToken && address) {
 			setAccessToken(accessToken);
-			setAddress(address);
+			// setAddress(address);
 			if (relayingPosts?.length) {
 				setIndexingPosts(JSON.parse(relayingPosts));
 			}
@@ -359,7 +378,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 			setProvider(web3Provider);
 
 			/* Set the address in the state variable */
-			setAddress(address);
+			// setAddress(address);
 			localStorage.setItem("address", address);
 
 			return web3Provider;
@@ -420,7 +439,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				profiles,
 				indexingProfiles,
 				indexingPosts,
-				setAddress,
 				setAccessToken,
 				setPrimaryProfile,
 				setProfileCount,
@@ -431,6 +449,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				setProfiles,
 				checkNetwork,
 				connectWallet,
+				isLoggedIn,
+				setIsLoggedIn
 			}}
 		>
 			{children}

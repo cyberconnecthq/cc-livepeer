@@ -10,7 +10,6 @@ export interface IRegisterEssenceVideo {
   category: string;
   thumbnail: string;
   UploadedDate: string;
-  middleware: string;
 }
 
 
@@ -39,7 +38,7 @@ export interface IAuthContext {
 	profiles: IAccountCard[];
 	indexingProfiles: IAccountCard[];
 	indexingPosts: IPostCard[];
-	setAddress: (address: string | undefined) => void;
+	isLoggedIn: boolean;
 	setAccessToken: (accessToken: string | undefined) => void;
 	setPrimaryProfile: (primaryProfile: IPrimaryProfileCard | undefined) => void;
 	setProfileCount: (profileCount: number) => void;
@@ -50,6 +49,7 @@ export interface IAuthContext {
 	setIndexingPosts: (indexingPosts: IPostCard[]) => void;
 	connectWallet: () => Promise<Web3Provider>;
 	checkNetwork: (provider: Web3Provider) => Promise<void>;
+	setIsLoggedIn: (isLoggedIn: boolean) => void;
 }
 
 export interface IModalContext {
@@ -214,4 +214,19 @@ export interface IPrimaryProfileCard {
 	handle: string;
 	avatar: string;
 	metadata: string;
+}
+
+
+
+export interface IMiddlewareProps {
+    /* The address of the Essence creator */
+    recipient: string;
+    /* Number of times the Essence can be collected */
+    totalSupply: string;
+    /* Amount that needs to be paid to collect essence */
+    amount: string;
+    /* The currency for the  amount. Chainlink token contract on Goerli */
+    currency: string;
+    /* If it require that the collector is also subscribed */
+    subscribeRequired: boolean;
 }

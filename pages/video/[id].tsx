@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import { Header, Sidebar } from '../../layout'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Background, Player, Video as RelatedVideos } from '../../components'
 import { apolloClient } from '../../clients'
 import { ESSENCE_BY_ID, GET_ALL_ESSENCE_VIDEOS } from '../../graphql'
@@ -8,25 +8,32 @@ import Link from 'next/link'
 import moment from 'moment'
 import { BiCheck } from 'react-icons/bi'
 import Avvvatars from 'avvvatars-react'
-import { IVideo } from '../../types'
+import { IPostCard, IVideo } from '../../types'
 import { essenceResponseToVideo } from "../../utils";
+import { AuthContext } from '../../context/auth'
+import CollectBtn from '../../components/Buttons/CollectBtn'
 
 export default function Video() {
   const router = useRouter()
   const { id } = router.query
   const [video, setVideo] = useState<IVideo | null>(null)
+  const [essence, setEssence] = useState<IPostCard>(null)
   const [relatedVideos, setRelatedVideos] = useState<IVideo[]>([])
-
+  const {address} =  useContext(AuthContext)
   const fetchVideos = () => {
     apolloClient.query({
       query: ESSENCE_BY_ID,
       variables: {
         metadataId: id,
+        me: address
       },
       fetchPolicy: 'network-only',
     })
       .then(({ data }) => {
         console.log('EssenceByID video page res:', data)
+        const currentEssence = data?.essenceByFilter[0] || {}
+        console.log("currentEssence", currentEssence)
+        setEssence(currentEssence)
         const parsedVideos = data.essenceByFilter.map((essence: any) => essenceResponseToVideo(essence));
         console.log("parsedVideos", parsedVideos)
         const video = parsedVideos.find((video) => video.id === id)
@@ -42,7 +49,7 @@ export default function Video() {
       query: GET_ALL_ESSENCE_VIDEOS,
       variables: {
         appID: 'cyberconnect-livepeer',
-        me: '0xD790D1711A9dCb3970F47fd775f2f9A2f0bCc348',
+        me: address,
       },
       fetchPolicy: 'network-only',
     })
@@ -63,7 +70,7 @@ export default function Video() {
 
   return (
     <Background className="flex  h-screen w-full flex-row">
-      <Sidebar />
+      <Sidebar updateCategory={(category) => router.push('/home')} />
       <div className="flex flex-1 flex-col">
         <Header />
         {video && (
@@ -77,8 +84,13 @@ export default function Video() {
                   </h3>
                   <p className="mt-1 text-gray-500 ">
                     {video.category} •{' '}
-                    {moment(new Date(video.createdAt * 1000)).fromNow()}
+                    {moment(Date.parse(video.date)).fromNow()}
                   </p>
+                </div>
+                <div className="flex flex-row items-center">
+                  {/* <p className="text-gray-500 mr-2">Share</p> */}
+                  <CollectBtn profileID={essence.createdBy.profileID} essenceID={essence.essenceID} isCollectedByMe={essence.isCollectedByMe} collectMw={essence.collectMw} /> 
+                  {/* profileID={1} essenceID={1} isCollectedByMe={false} collectMw={""} /> */}
                 </div>
               </div>
               <div>

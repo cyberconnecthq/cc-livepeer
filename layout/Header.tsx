@@ -1,10 +1,11 @@
 import React, {useContext} from "react";
-import { AiOutlinePlusCircle } from "react-icons/ai";
+import { AiOutlinePlusCircle, AiOutlineAntDesign } from "react-icons/ai";
+import { CgProfile } from "react-icons/cg";
 import Link from "next/link";
 import { SigninBtn, Toggle } from "../components";
 import Image from "next/image";
-{/* <UserOutlined /> */}
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import CustomConnectButton  from "../components/Buttons/CustomConnectButton";
 import { AuthContext } from "../context/auth";
 import PrimaryProfileCard from "../components/Cards/PrimaryProfileCard";
 interface IHeader {
@@ -44,33 +45,29 @@ export default function Header({ search }: IHeader) {
       <div className=" w-1/3 flex justify-end items-center">
         <Link href="/upload">
           <AiOutlinePlusCircle
-            size="30px"
+            size="35px"
             className="mr-8 fill-icons-light dark:fill-icons-dark cursor-pointer"
+            // transition duration-0 ease-in-out rounded-full
           />
         </Link>
+        {accessToken && primaryProfile && <Link href="/profile">
+        <CgProfile
+        size="35px"
+        className="mr-8 fill-icons-light dark:fill-icons-dark cursor-pointer"/>
+		    </Link> }
         <Toggle />
         {!accessToken && !primaryProfile && <div className="ml-10">
           <SigninBtn />
           </div>}
-        {accessToken && primaryProfile && <Link href="/profile">
-			<div >
-          <AiOutlinePlusCircle
-            size="30px"
-            className="mr-8 fill-icons-light dark:fill-icons-dark cursor-pointer"
-          />
-        {primaryProfile && (
-			<div className="">
-            <PrimaryProfileCard {...primaryProfile} />
-          </div>
-        )}
-		</div>
-		</Link> }
-        <div className="ml-10">
+        {/* <div className="ml-10">
           <ConnectButton
             label="Connect Wallet"
             accountStatus="address"
             showBalance={false}
           />
+        </div> */}
+        <div className="ml-10">
+          <CustomConnectButton {...primaryProfile} />
         </div>
       </div>
     </header>

@@ -1,12 +1,13 @@
 import React, { useState, useEffect,useContext, useRef } from 'react'
 import { Sidebar, Header } from '../../layout'
 import { BiCloud, BiPlus } from 'react-icons/bi'
+import { AiOutlineDollarCircle } from 'react-icons/ai'
 import { useAsset, useCreateAsset } from '@livepeer/react'
 import { UploadInput, Background } from '../../components'
 import { pinFileToIPFS } from '../../utils'
 import toast from 'react-hot-toast'
 import RegisterEssence from '../../hooks/createEssence'
-import { IEssenceMetadata, IRegisterEssenceVideo, Media, Attribute} from '../../types'
+import { IEssenceMetadata, IRegisterEssenceVideo, Media, Attribute, IMiddlewareProps} from '../../types'
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { pinJSONToIPFS, getEssenceSVGData } from "../../utils";
 import {
@@ -19,8 +20,27 @@ import { AuthContext } from "../../context/auth";
 import { v4 as uuidv4 } from "uuid";
 import { ESSENCE_APP_ID } from "../../constants";
 import getImage from "../../lib/getImage";
+import { Input, Switch } from '@nextui-org/react';
+
 
 export default function Upload() {
+  const {
+		primaryProfile,
+		indexingPosts,
+    setIndexingPosts,
+		connectWallet,
+		checkNetwork,
+    address,
+    accessToken
+	} = useContext(AuthContext);
+  
+  const defaultMiddleware: IMiddlewareProps = {
+    recipient: address,
+    totalSupply: '1000',
+    amount: '1000000000000000000',
+    currency: '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
+    subscribeRequired: false}
+
   const [title, setTitle] = useState<string>('')
   const [description, setDescription] = useState<string>('')
   const [category, setCategory] = useState<string>('')
@@ -31,36 +51,25 @@ export default function Upload() {
   const [videoProgress, setVideoProgress] = useState([]);
   const [thumbnailCID, setThumbnailCID] = useState<string>('');
   const thumbnailRef = useRef<HTMLInputElement>(null);
+  const [showMiddleware, setShowMiddleware] = useState<boolean>(false);
+  const [middleware, setMiddleware] = useState<IMiddlewareProps>(defaultMiddleware)
   ////////////////////////////////////////////////////////////
-  const {
-		primaryProfile,
-		indexingPosts,
-		connectWallet,
-		checkNetwork,
-    accessToken
-	} = useContext(AuthContext);
-  // let accessToken = null;
-	// if (typeof window !== 'undefined') {
-	// 	// Perform localStorage action
-	// 	const accessToken = localStorage.getItem("accessToken");
-	//   }
+  
+ 
 	const [createRegisterEssenceTypedData] = useMutation(
 		CREATE_REGISTER_ESSENCE_TYPED_DATA
 	);
 	const [getRelayActionStatus] = useLazyQuery(RELAY_ACTION_STATUS);
 	const [relay] = useMutation(RELAY);
   const [relayActionId, setRelayActionId] = useState<string | null>(null);
-  // sign in 
-  // console.log("access token", accessToken)
 
-
-	const registerEssence = async ({ livepeerId, video, title, description, location, category, thumbnail, UploadedDate, middleware }: IRegisterEssenceVideo) => {
+	const registerEssence = async ({ livepeerId, video, title, description, location, category, thumbnail, UploadedDate }: IRegisterEssenceVideo) => {
 		try {
 			/* Check if the user logged in */
-			// if (!accessToken) {
-      //   console.log("no access token")
-			// 	throw Error("You need to Sign in.");
-			// }
+			if (!accessToken) {
+        console.log("no access token")
+				throw Error("You need to Sign in.");
+			}
 
 			/* Check if the has signed up */
 			if (!primaryProfile?.profileID) {
@@ -117,12 +126,6 @@ export default function Upload() {
 			/* Get the signer from the provider */
 			const signer = provider.getSigner();
 
-			/* Get the address from the provider */
-			const address = await signer.getAddress();
-
-			/* Get the network from the provider */
-			const network = await provider.getNetwork();
-
 			/* Create typed data in a readable format */
 			const typedDataResult = await createRegisterEssenceTypedData({
 				variables: {
@@ -132,27 +135,11 @@ export default function Upload() {
 						/* Name of the Essence */
 						name: title,
 						/* Symbol of the Essence */
-						symbol: "POST",
+						symbol: "VIDEO",
 						/* URL for the json object containing data about content and the Essence NFT */
 						tokenURI: `https://cyberconnect.mypinata.cloud/ipfs/${ipfsHash}`,
 						/* Middleware that allows users to collect the Essence NFT for free */
-						middleware:
-							middleware === "free"
-								? { collectFree: true }
-								: {
-									collectPaid: {
-										/* Address that will receive the amount */
-										recipient: address,
-										/* Number of times the Essence can be collected */
-										totalSupply: "1000",
-										/* Amount that needs to be paid to collect essence */
-										amount: "1000000000000000000",
-										/* The currency for the  amount. Chainlink token contract on Goerli */
-										currency: "0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
-										/* If it require that the collector is also subscribed */
-										subscribeRequired: false,
-									},
-								},
+						middleware: !showMiddleware? { collectFree: true } : {collectPaid: middleware,},
 						/* Set if the Essence should be transferable or not */
 						transferable: true,
 					},
@@ -205,10 +192,10 @@ export default function Upload() {
 				JSON.stringify([...indexingPosts, relayingPost])
 			);
 			/* Set the indexingPosts in the state variables */
-			// setIndexingPosts([...indexingPosts, relayingPost]);
+			setIndexingPosts([...indexingPosts, relayingPost]);
 
 			/* Display success message */
-            toast.success("Post was created!");
+      toast.success("Post was created!");
 		} catch (error) {
 			/* Set the indexingPosts in the state variables */
 			// setIndexingPosts([...indexingPosts]);
@@ -245,8 +232,7 @@ export default function Upload() {
  // UseEffect to save the video to the blockchain
   useEffect(() => {
     const asyncSaveVideo = async () => {
-    // check if the uploadData is not empty
-    // if (Object.keys(uploadData).length !== 0) {
+    // check if the assets are available
     if (assets) {
       let data: IRegisterEssenceVideo = {
         livepeerId: assets[0]?.id,
@@ -256,8 +242,7 @@ export default function Upload() {
         location,
         category,
         thumbnail: thumbnailCID?.ipfshash || "",
-        UploadedDate: Date.now().toString(),
-        middleware: "free"
+        UploadedDate: Date.now().toString()
       };
       console.log("register essence data:", data)
       // Calling the saveVideo function and passing the metadata object
@@ -425,36 +410,80 @@ export default function Upload() {
                   </select>
                 </div>
               </div>
-              <label className="mt-10 text-sm  text-gray-600 dark:text-[#9CA3AF]">Thumbnail</label>
 
-              <div
-                onClick={() => {
-                  thumbnailRef.current.click();
-                }}
-                className="border-borderWhiteGray mt-2 flex  h-36 w-64 items-center justify-center rounded-md  border-2 border-dashed p-2 dark:border-gray-600"
-              >
-                {thumbnail ? (
-                  <img
+              <div className="mt-10 flex w-[90%] flex-row  justify-between">
+                <div>
+                  
+                  <label className="mt-10 text-sm  text-gray-600 dark:text-[#9CA3AF]">Thumbnail</label>
+                  <div
                     onClick={() => {
                       thumbnailRef.current.click();
                     }}
-                    src={URL.createObjectURL(thumbnail)}
-                    alt="thumbnail"
-                    className="h-full rounded-md"
+                    className="border-borderWhiteGray mt-2 flex  h-36 w-64 items-center justify-center rounded-md  border-2 border-dashed p-2 dark:border-gray-600"
+                  >
+                    {thumbnail ? (
+                      <img
+                        onClick={() => {
+                          thumbnailRef.current.click();
+                        }}
+                        src={URL.createObjectURL(thumbnail)}
+                        alt="thumbnail"
+                        className="h-full rounded-md"
+                      />
+                    ) : (
+                      <BiPlus size={40} color="gray" />
+                    )}
+                  </div>
+    
+                  <input
+                    type="file"
+                    className="hidden"
+                    ref={thumbnailRef}
+                    onChange={(e) => {
+                      setThumbnail(e.target.files[0]);
+                    }}
                   />
-                ) : (
-                  <BiPlus size={40} color="gray" />
-                )}
+                </div>
+                <div className="flex w-2/5 flex-col	">
+                  <label className="text-sm text-gray-600  dark:text-[#9CA3AF]">Pay to Collect</label>
+                  <Switch
+                  size="xl"
+                  icon={<AiOutlineDollarCircle />}
+                  onChange={(e)=> {setShowMiddleware(e.target.checked)}} />
+                  {showMiddleware && <div className="flex flex-col">
+                  <label className="text-sm text-gray-600  dark:text-[#9CA3AF]">Price</label>
+                  <Input
+                        bordered
+                        labelLeft="$"
+                        labelRight="BUSD"
+                        placeholder="1.00"
+                        value={Number(middleware.amount) / 10**18}
+                        onChange={(e) => setMiddleware({...middleware,  amount: String(Number(e.target.value)*10**18)})}
+                  />
+                  <label className="text-sm text-gray-600  dark:text-[#9CA3AF]">Total Supply</label>
+                  <Input
+                        bordered
+                        labelRight="tokens"
+                        placeholder={"1000000000000000000"}
+                        type="number"
+                        value={middleware.totalSupply}
+                      onChange={(e) => setMiddleware({...middleware,  totalSupply: String(e.target.value)})}
+                  />
+                  <label className="text-sm text-gray-600  dark:text-[#9CA3AF]">Require Subscribe</label>
+                    <Switch
+                    size="xl"
+                    initialChecked={middleware.subscribeRequired}
+                    onChange={(e)=> {setMiddleware({...middleware,  subscribeRequired: e.target.checked})}} />
+                  </div>
+                  // totalSupply
+                  // amount
+                  // currency
+                  // subscribeRequired
+                  }
+                 
+                </div>
               </div>
-
-              <input
-                type="file"
-                className="hidden"
-                ref={thumbnailRef}
-                onChange={(e) => {
-                  setThumbnail(e.target.files[0]);
-                }}
-              />
+              
             </div>
 
             <UploadInput isAudio={false} setVideo={setVideo} />

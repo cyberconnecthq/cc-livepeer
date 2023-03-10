@@ -10,6 +10,9 @@ const WEB3_STORAGE_KEY = process.env.NEXT_PUBLIC_WEB3_STORAGE_KEY;
 const GRAPHQL_URI = "https://api.cyberconnect.dev/testnet/"
 const ESSENCE_APP_ID = "cyberconnect-livepeer";
 const DOMAIN = "test.com"; // Domain name
+const ACCESS_TOKEN_KEY = 'CC_ACCESS_TOKEN'
+const REFRESH_TOKEN_KEY = 'CC_REFRESH_TOKEN'
+const WALLET_KEY = 'CC_WALLET'
 export {
   APP_NAME,
   APP_DESCRIPTION,
@@ -22,5 +25,8 @@ export {
   LIVEPEER_KEY,
   WEB3_STORAGE_KEY,
   ESSENCE_APP_ID,
-  DOMAIN
+  DOMAIN,
+  ACCESS_TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
+  WALLET_KEY
 }

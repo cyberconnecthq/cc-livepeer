@@ -24,7 +24,7 @@ export default function Profile() {
       fetchPolicy: "network-only",
     }).then(({ data }) => {
       console.log("My Essences", data);
-      const essencesArr = data?.address?.wallet?.primaryProfile?.essences?.edges.map((edge: any) => { edge.node });
+      const essencesArr = data?.address?.wallet?.primaryProfile?.essences?.edges.map((edge: any) => edge.node);
       console.log("essencesArr", essencesArr);
       const parsedVideos = essencesArr.map((essence: any) => essenceResponseToVideo(essence));
       setVideos(parsedVideos);
@@ -43,24 +43,29 @@ export default function Profile() {
         <Sidebar updateCategory={(category) => setCategory(category)} />
         <div className="flex-1 h-screen flex flex-col">
           <Header search={(text) => setQuery(text)} />
-          <div className="flex flex-row flex-wrap">
-            {loading ? (
-              <>
-                {Array(10)
-                  .fill(0)
-                  .map((_, index) => (
-                    <div className="w-80">
-                      <Loader />
-                    </div>
-                  ))}
-              </>
-            ) : (
-              videos?.map((video: any) => (
-                <Video video={video} horizontal={false} />
-              ))
-            )}
+          <div className="border-border-light dark:border-border-dark flex flex-row justify-between ml-4 border-b-2 py-4">
+          <h3 className="text-transform: text-2xl capitalize dark:text-white">
+                   My Videos
+            </h3>
           </div>
-        </div>
+              <div className="flex flex-row flex-wrap">
+                {loading ? (
+                  <>
+                    {Array(10)
+                      .fill(0)
+                      .map((_, index) => (
+                        <div className="w-80">
+                          <Loader />
+                        </div>
+                      ))}
+                  </>
+                ) : (
+                  videos?.map((video: any) => (
+                    <Video video={video} horizontal={false} />
+                  ))
+                )}
+              </div>
+          </div>
       </div>
     </Background>
   );
