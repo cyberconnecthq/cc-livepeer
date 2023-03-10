@@ -54,14 +54,14 @@ You need to have Node.js, NPM and hardhat installed on your computer, before run
    ```sh
    yarn install
    ```
-3. Create an `.env` file and get an API key from Livepeer studio, CyberConnect, Pinata & NodeReal. 
+3. Create an `.env` file and get an API key from Livepeer studio, CyberConnect, Pinata & NodeReal. And project id from WalletConnect.
    ```sh
    NEXT_PUBLIC_LIVEPEER_KEY="YOUR_KEY"
    NEXT_PUBLIC_CYBERCONNECT_API_KEY="YOUR_KEY"
    NEXT_PUBLIC_NODEREAL_API_KEY="YOUR_KEY"
    NEXT_PUBLIC_PINATA_API_KEY="YOUR_KEY"
    NEXT_PUBLIC_PINATA_API_SECRET="YOUR_KEY"
-   NEXT_PUBLIC_CHAIN_ID=97
+   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID="YOUR_KEY"
    ```
 
 4. Run the app
