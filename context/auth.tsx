@@ -20,6 +20,7 @@ import { timeout } from "../utils";
 import { useLazyQuery } from "@apollo/client";
 import { useAccount } from "wagmi";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, WALLET_KEY, DOMAIN } from '../constants'
+import toast from "react-hot-toast";
 
 export const AuthContext = createContext<IAuthContext>({
 	address: undefined,
@@ -142,6 +143,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				console.log("res 3000", res.data.relayActionStatus);
 
 				if (res.data.relayActionStatus.txStatus === "SUCCESS") {
+					toast.success("Post successfully relayed")
 					const filtered = indexingPosts.filter(
 						(item: any) => item.relayActionId !== post.relayActionId
 					);

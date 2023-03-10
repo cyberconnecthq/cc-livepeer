@@ -194,7 +194,7 @@ export default function Upload() {
 			setIndexingPosts([...indexingPosts, relayingPost]);
 
 			/* Display success message */
-      toast.success("Post was created!");
+      toast("Your essence is being relayed...", {icon:'⏳'}) //info("Your essence is being relayed.");
 		} catch (error) {
 			/* Set the indexingPosts in the state variables */
 			// setIndexingPosts([...indexingPosts]);
