@@ -16,7 +16,7 @@ import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from 'wagmi/providers/public'
 
 // bsc.name = 'BNB Chain'
-export const availableChains = [bscTestnet, bsc]; // mainnet, goerli
+export const availableChains = [bscTestnet]; // mainnet, goerli
 
 const NODEREAL_RPCS = {
   [mainnet.id]: {

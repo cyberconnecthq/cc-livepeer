@@ -4,7 +4,7 @@ import React from "react";
 import { BiCheck } from "react-icons/bi";
 import getImage from "../lib/getImage";
 import { IVideo } from "../types";
-
+import { Image } from "@nextui-org/react";
 interface IProps {
   video: IVideo;
   horizontal?: boolean;
@@ -24,7 +24,7 @@ const Video: React.FC<IProps> = ({ video, horizontal }) => {
           <img
             className={
               horizontal
-                ? "object-cover rounded-lg w-60  "
+                ? "object-cover rounded-lg w-60 h-30 "
                 : "object-cover rounded-lg w-full h-40"
             }
             src={getImage(video.thumbnailHash)}
