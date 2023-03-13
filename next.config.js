@@ -2,8 +2,17 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  assetPrefix: undefined,
+  // images: {
+  //   domains: ["raw.githubusercontent.com"],
+  // },
   images: {
-    domains: ["raw.githubusercontent.com"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*'
+      },
+    ],
   },
 };
 

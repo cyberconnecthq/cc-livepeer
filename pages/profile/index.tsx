@@ -5,7 +5,7 @@ import { apolloClient } from "../../clients";
 import { PRIMARY_PROFILE_ESSENCES } from "../../graphql";
 import { essenceResponseToVideo } from "../../utils";
 import { AuthContext } from "../../context/auth";
-
+import { ESSENCE_APP_ID } from "../../constants";
 
 export default function Profile() {
   const [videos, setVideos] = useState<String[]>([]);
@@ -20,11 +20,13 @@ export default function Profile() {
       query: PRIMARY_PROFILE_ESSENCES,
       variables: {
         address: address,
+        appId: ESSENCE_APP_ID,
       },
       fetchPolicy: "network-only",
     }).then(({ data }) => {
       console.log("My Essences", data);
       const essencesArr = data?.address?.wallet?.primaryProfile?.essences?.edges.map((edge: any) => edge.node);
+      // essencesArr.filter()
       console.log("essencesArr", essencesArr);
       const parsedVideos = essencesArr.map((essence: any) => essenceResponseToVideo(essence));
       setVideos(parsedVideos);

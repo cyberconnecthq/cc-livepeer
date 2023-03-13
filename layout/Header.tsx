@@ -8,6 +8,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import CustomConnectButton  from "../components/Buttons/CustomConnectButton";
 import { AuthContext } from "../context/auth";
 import PrimaryProfileCard from "../components/Cards/PrimaryProfileCard";
+import {Tooltip} from "@nextui-org/react"
 interface IHeader {
   search?: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -31,7 +32,7 @@ export default function Header({ search }: IHeader) {
           </div>
         </Link>
       </div>
-      <div className=" w-1/3 flex justify-center items-center">
+      {/* <div className=" w-1/3 flex justify-center items-center">
         {search ? (
           <input
             type="text"
@@ -40,21 +41,27 @@ export default function Header({ search }: IHeader) {
             className=" border-0 bg-transparent focus:outline-none"
           />
         ) : null}
-      </div>
+      </div> */}
 
       <div className=" w-1/3 flex justify-end items-center">
-        <Link href="/upload">
-          <AiOutlinePlusCircle
-            size="35px"
-            className="mr-8 fill-icons-light dark:fill-icons-dark rounded-full cursor-pointer"
-            // transition duration-0 ease-in-out rounded-full
-          />
-        </Link>
-        {accessToken && primaryProfile && <Link href="/profile">
-        <CgProfile
-        size="35px"
-        className="mr-8 fill-icons-light dark:fill-icons-dark  rounded-full cursor-pointer"/>
-		    </Link> }
+        <Tooltip content={"Upload a video"}>
+          <Link href="/upload">
+            <AiOutlinePlusCircle
+              size="35px"
+              className="mr-8 fill-icons-light dark:fill-icons-dark rounded-full cursor-pointer"
+              // transition duration-0 ease-in-out rounded-full
+            />
+          </Link>
+        </Tooltip>
+        {accessToken && primaryProfile && 
+        <Tooltip content={"Your Profile"}>
+          <Link href="/profile">
+          <CgProfile
+          size="35px"
+          className="mr-8 fill-icons-light dark:fill-icons-dark  rounded-full cursor-pointer"/>
+  		    </Link> 
+        </Tooltip>
+        }
         <Toggle />
         {/* {!accessToken && !primaryProfile && <div className="ml-10">
           <SigninBtn />

@@ -74,7 +74,9 @@ export default function CustomConnectButton({handle, avatar, metadata} : IPrimar
     
                   if (chain.unsupported) {
                     return (
-                      <button onClick={openChainModal} type="button">
+                      <button onClick={openChainModal} 
+                      type="button"
+                      className="flex flex-row items-center  justify-between  rounded-lg bg-red-500 py-2 px-4 text-white hover:bg-red-700">
                         Wrong network
                       </button>
                     );

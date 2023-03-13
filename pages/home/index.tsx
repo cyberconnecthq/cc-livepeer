@@ -6,6 +6,8 @@ import { GET_ALL_ESSENCE_VIDEOS } from "../../graphql";
 import { essenceResponseToVideo } from "../../utils";
 import { AuthContext } from "../../context/auth";
 import { ESSENCE_APP_ID} from "../../constants";
+import { BiCloud } from "react-icons/bi";
+import Link from "next/link";
 export default function Home() {
   const [videos, setVideos] = useState<String[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
@@ -26,8 +28,15 @@ export default function Home() {
     }).then(({ data }) => {
       console.log("Videos", data);
       const parsedVideos = data.essenceByFilter.map((essence: any) => essenceResponseToVideo(essence));
-      setVideos(parsedVideos);
       console.log("Parsed Videos", parsedVideos);
+      
+      let filteredVideos = parsedVideos
+      if (category !== "" && category !== "All"){
+        console.log("Category", category)
+        filteredVideos = parsedVideos.filter((video) => { video.category === category })
+      }
+      console.log("Filtered Videos", filteredVideos);
+      setVideos(filteredVideos);
       setLoading(false);
     });
   };
@@ -41,7 +50,8 @@ export default function Home() {
       <div className="w-full flex flex-row">
         <Sidebar updateCategory={(category) => setCategory(category)} />
         <div className="flex-1 h-screen flex flex-col">
-          <Header search={(text) => setQuery(text)} />
+          {/* <Header search={(text) => setQuery(text)} /> */}
+          <Header />
           <div className="flex flex-row flex-wrap">
             {loading ? (
               <>
@@ -54,6 +64,29 @@ export default function Home() {
                   ))}
               </>
             ) : (
+              videos?.length === 0 ? (
+                  <div className="m-96 object-center">
+                    <h3 className="text-text-light font-bold leading-tighter tracking-tighter mb-4 dark:text-text-dark">
+                      {`No videos found in the ${category} category`}
+                    </h3>
+                      <Link href="/upload">
+
+                      <div>
+                        {`Upload one now 👉   `}
+                          <button
+                            onClick={() => { }}
+                            className="flex flex-row items-center  justify-between  rounded-lg bg-blue-500 py-2 px-4 text-white hover:bg-blue-700"
+                          >
+                            <BiCloud />
+                            <p className="ml-2">{"Upload"}</p>
+                          </button>
+                          
+                      </div>
+                      </Link>
+                      
+                  </div>
+              ) 
+              :
               videos?.map((video: any) => (
                 <Video video={video} horizontal={false} />
               ))

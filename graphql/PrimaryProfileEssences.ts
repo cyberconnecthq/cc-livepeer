@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
 
 export const PRIMARY_PROFILE_ESSENCES = gql`
-  query PrimaryProfileEssences($address: AddressEVM!) {
+  query PrimaryProfileEssences($address: AddressEVM!, $appId: String!) {
   address(address: $address) {
     wallet {
       primaryProfile {
-        essences(first: 100) {
+        essences(first: 100, appID: $appId) {
           totalCount
           edges {
             node {

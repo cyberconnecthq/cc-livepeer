@@ -19,7 +19,7 @@ import { useCancellableQuery } from "../hooks/useCancellableQuery";
 import { timeout } from "../utils";
 import { useLazyQuery } from "@apollo/client";
 import { useAccount } from "wagmi";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, WALLET_KEY, DOMAIN } from '../constants'
+import { ACCESS_TOKEN_KEY, ESSENCE_APP_ID, REFRESH_TOKEN_KEY, WALLET_KEY, DOMAIN } from '../constants'
 import toast from "react-hot-toast";
 
 export const AuthContext = createContext<IAuthContext>({
@@ -109,6 +109,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 					query: PRIMARY_PROFILE_ESSENCES,
 					variables: {
 						address: address,
+						appId: ESSENCE_APP_ID
 					},
 				});
 				const res = await query;
@@ -147,7 +148,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 					const filtered = indexingPosts.filter(
 						(item: any) => item.relayActionId !== post.relayActionId
 					);
-
+					console.log("filtered", filtered)
 					setIndexingPosts(filtered);
 					localStorage.setItem("relayingPosts", JSON.stringify(filtered));
 					await fetch();
@@ -316,6 +317,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 					query: PRIMARY_PROFILE_ESSENCES,
 					variables: {
 						address: address,
+						appId: ESSENCE_APP_ID,
 					},
 				});
 				const res = await query;

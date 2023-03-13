@@ -183,6 +183,7 @@ export default function Upload() {
 				isIndexed: false,
 				isCollectedByMe: false,
 				collectMw: undefined,
+        metadata_id: undefined,
 				relayActionId: relayActionId,
 			};
 
@@ -197,7 +198,7 @@ export default function Upload() {
       toast("Your essence is being relayed...", {icon:'⏳'}) //info("Your essence is being relayed.");
 		} catch (error) {
 			/* Set the indexingPosts in the state variables */
-			setIndexingPosts([...indexingPosts]);
+			// setIndexingPosts([...indexingPosts]);
 			/* Display error message */
 			const message = error.message as string;
 			toast.error(message);

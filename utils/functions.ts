@@ -1,5 +1,6 @@
 import axios from "axios";
 import format from "date-fns/format";
+import getImage from "../lib/getImage";
 
 const apiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY || "";
 const apiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET || "";
@@ -13,7 +14,7 @@ export const essenceResponseToVideo = (essence: any) => {
       description: essence.metadata?.description,
       location: essence?.location || "",
       category: essence?.category || 'Other', 
-      thumbnailHash: essence.metadata?.image.length === 46 ? essence.metadata?.image : essence.metadata?.image.split('/').pop() , // essence.thumbnailHash,"QmTppLkJ7X3tCQEPzx1ibKJhYkUDftKVLbaSnYCERmfmD5"
+      thumbnailHash: essence.metadata?.image.length === 46 ? getImage(essence.metadata?.image) :  parseURL(essence.metadata?.image), // essence.metadata?.image.split('/').pop(),
       isAudio: false,
       date: essence.metadata?.issue_date,
       handle: essence.createdBy?.handle,

@@ -2,6 +2,8 @@ import { useContext, useState } from "react";
 import { useMutation } from "@apollo/client";
 import { CREATE_COLLECT_ESSENCE_TYPED_DATA, RELAY } from "../../graphql";
 import { AuthContext } from "../../context/auth";
+import { Button, Spacer, Loading } from "@nextui-org/react";
+
 import toast from "react-hot-toast";
 function CollectBtn({
 	profileID,
@@ -20,6 +22,7 @@ function CollectBtn({
 	);
 	const [relay] = useMutation(RELAY);
 	const [stateCollect, setStateCollect] = useState(isCollectedByMe);
+	const [loading, setLoading] = useState(false);
 
 	const handleOnClick = async () => {
 		try {
@@ -27,7 +30,7 @@ function CollectBtn({
 			if (!accessToken) {
 				throw Error("You need to Sign in.");
 			}
-
+			setLoading(true);
 			/* Connect wallet and get provider */
 			const provider = await connectWallet();
 
@@ -81,6 +84,7 @@ function CollectBtn({
 
 			/* Set the state to true */
 			setStateCollect(true);
+			setLoading(false);
 
 			/* Display success message */
 			toast.success("Post was collected!");
@@ -93,13 +97,14 @@ function CollectBtn({
 	};
 
 	return (
-		<button
-			className="collect-btn"
+		<Button
+			// className="collect-btn"
 			onClick={handleOnClick}
 			disabled={stateCollect}
+			auto
 		>
-			{stateCollect ? "Collected" : "Collect"}
-		</button>
+			{loading ? <Loading color="currentColor" size="sm" /> : stateCollect ? "Collected" : "Collect"}
+		</Button>
 	);
 }
 
