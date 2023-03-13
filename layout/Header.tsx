@@ -1,6 +1,5 @@
 import React, {useContext} from "react";
-import { AiOutlinePlusCircle, AiOutlineAntDesign } from "react-icons/ai";
-import { CgProfile } from "react-icons/cg";
+import { AiOutlinePlusCircle, AiOutlineAntDesign, AiOutlineUser } from "react-icons/ai";
 import Link from "next/link";
 import { Toggle } from "../components";
 import Image from "next/image";
@@ -44,7 +43,7 @@ export default function Header({ search }: IHeader) {
       </div> */}
 
       <div className=" w-1/3 flex justify-end items-center">
-        <Tooltip content={"Upload a video"}>
+        <Tooltip content={"Upload a video"} placement="bottom">
           <Link href="/upload">
             <AiOutlinePlusCircle
               size="35px"
@@ -54,9 +53,9 @@ export default function Header({ search }: IHeader) {
           </Link>
         </Tooltip>
         {accessToken && primaryProfile && 
-        <Tooltip content={"Your Profile"}>
+        <Tooltip content={"Your Profile"} placement="bottom">
           <Link href="/profile">
-          <CgProfile
+          <AiOutlineUser
           size="35px"
           className="mr-8 fill-icons-light dark:fill-icons-dark  rounded-full cursor-pointer"/>
   		    </Link> 

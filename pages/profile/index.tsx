@@ -6,6 +6,8 @@ import { PRIMARY_PROFILE_ESSENCES } from "../../graphql";
 import { essenceResponseToVideo } from "../../utils";
 import { AuthContext } from "../../context/auth";
 import { ESSENCE_APP_ID } from "../../constants";
+import Link from "next/link";
+import { BiCloud } from "react-icons/bi";
 
 export default function Profile() {
   const [videos, setVideos] = useState<String[]>([]);
@@ -29,8 +31,14 @@ export default function Profile() {
       // essencesArr.filter()
       console.log("essencesArr", essencesArr);
       const parsedVideos = essencesArr.map((essence: any) => essenceResponseToVideo(essence));
-      setVideos(parsedVideos);
       console.log("Parsed Videos", parsedVideos);
+      let filteredVideos = parsedVideos
+      if (category !== "" && category !== "All"){
+        console.log("Category", category)
+        filteredVideos = parsedVideos.filter((video) => { video.category === category })
+      }
+      console.log("Filtered Videos", filteredVideos);
+      setVideos(filteredVideos);
       setLoading(false);
     });
   };
@@ -50,23 +58,44 @@ export default function Profile() {
                    My Videos
             </h3>
           </div>
-              <div className="flex flex-row flex-wrap">
-                {loading ? (
-                  <>
-                    {Array(10)
-                      .fill(0)
-                      .map((_, index) => (
-                        <div className="w-80">
-                          <Loader />
-                        </div>
-                      ))}
-                  </>
-                ) : (
-                  videos?.map((video: any) => (
-                    <Video video={video} horizontal={false} />
-                  ))
-                )}
-              </div>
+          <div className="flex flex-row flex-wrap">
+            {loading ? (
+              <>
+                {Array(10)
+                  .fill(0)
+                  .map((_, index) => (
+                    <div className="w-80">
+                      <Loader />
+                    </div>
+                  ))}
+              </>
+            ) : (
+              videos?.length === 0 ? (
+                  <div className="m-96 object-center">
+                    <h3 className="text-text-light font-bold leading-tighter tracking-tighter mb-4 dark:text-text-dark">
+                      {`You haven't uploaded any videos in the ${category} category`}
+                    </h3>
+                      <Link href="/upload">
+                      <div>
+                        {`👇 Upload one now`}
+                          <button
+                            onClick={() => { }}
+                            className="flex flex-row items-center  justify-between  rounded-lg bg-blue-500 py-2 px-4 text-white hover:bg-blue-700"
+                          >
+                            <BiCloud />
+                            <p className="ml-2">{"Upload"}</p>
+                          </button>
+                      </div>
+                      </Link>
+                      
+                  </div>
+              ) 
+              :
+              videos?.map((video: any) => (
+                <Video video={video} horizontal={false} />
+              ))
+            )}
+          </div>
           </div>
       </div>
     </Background>

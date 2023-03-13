@@ -28,7 +28,8 @@ const Video: React.FC<IProps> = ({ video, horizontal }) => {
           <img
             className={
               horizontal
-                ? "object-cover rounded-lg w-60 h-30 "
+                // ? "object-cover rounded-lg w-60 h-30 "
+                ? "object-cover rounded-lg   w-44 h-36"
                 : "object-cover rounded-lg w-full h-40"
             }
             src={video.thumbnailHash}
