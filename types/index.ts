@@ -24,7 +24,6 @@ export interface IVideo {
   isAudio: boolean;
   date: string;
   author: string;
-  createdAt: BigInt;
   handle: string;
   isCollectedByMe: boolean;
   collectMw: string;

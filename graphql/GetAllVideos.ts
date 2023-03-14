@@ -13,6 +13,9 @@ query essencesBy($appID: String, $me: AddressEVM!) {
           handle
           profileID
           metadata
+          owner {
+            address
+          }
         }
         metadata {
           metadata_id
