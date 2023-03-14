@@ -26,16 +26,12 @@ export default function Home() {
       },
       fetchPolicy: "network-only",
     }).then(({ data }) => {
-      // console.log("Videos", data);
       const essenceNodes = data.essencesBy?.edges.map((edge: any) => edge.node) || [];
       const parsedVideos = essenceNodes.map((essence: any) => essenceResponseToVideo(essence));
-      
       let filteredVideos = parsedVideos
       if (category !== "" && category !== "All"){
-        // console.log("Category", category)
-        filteredVideos = parsedVideos.filter((video) => { video.category === category })
+        filteredVideos = parsedVideos.filter((video) =>  video.category === category )  
       }
-      // console.log("Filtered Videos", filteredVideos);
       setVideos(filteredVideos);
       setLoading(false);
     });
@@ -48,7 +44,7 @@ export default function Home() {
   return (
     <Background className="w-full">
       <div className="w-full flex flex-row">
-        <Sidebar updateCategory={(category) => setCategory(category)} />
+        <Sidebar updateCategory={setCategory} />
         <div className="flex-1 h-screen flex flex-col">
           {/* <Header search={(text) => setQuery(text)} /> */}
           <Header />

@@ -40,6 +40,7 @@ export default function Video() {
         const video = parsedVideos.find((video) => video.id === id)
         console.log("setting video", video)
         setVideo(video)
+        console.log("Category", video.category)
       })
       .catch((err) => {
         console.log('err', err)

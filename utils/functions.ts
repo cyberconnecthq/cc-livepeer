@@ -30,7 +30,7 @@ export const essenceResponseToVideo = (essence: any): IVideo =>  {
       } else if (attribute.trait_type === "location") {
         essenceObj['location'] = attribute.value;
       } else if (attribute.trait_type === "category") {
-        essenceObj['category'] = attribute.value;
+        essenceObj['category'] = attribute.value || "Other";
       } else if (attribute.trait_type === "thumbnailHash") {
         essenceObj['thumbnailHash'] = attribute.value;
       }else if (attribute.trait_type === "livepeer_id") {
