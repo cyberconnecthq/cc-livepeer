@@ -1,23 +1,25 @@
 import axios from "axios";
 import format from "date-fns/format";
 import getImage from "../lib/getImage";
-
+import {IVideo} from "../types";
 const apiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY || "";
 const apiSecret = process.env.NEXT_PUBLIC_PINATA_API_SECRET || "";
 
 
-export const essenceResponseToVideo = (essence: any) => {
+export const essenceResponseToVideo = (essence: any): IVideo =>  {
     let essenceObj = {
       id: essence.metadata?.metadata_id,
       hash: essence.contentId,
       title: essence.name || "No Title",
-      description: essence.metadata?.description,
+      description: essence.metadata?.content,
       location: essence?.location || "",
-      category: essence?.category || 'Other', 
+      category: essence?.category && essence?.category !== "" ? essence?.category : "Other", 
       thumbnailHash: essence.metadata?.image.length === 46 ? getImage(essence.metadata?.image) :  parseURL(essence.metadata?.image), // essence.metadata?.image.split('/').pop(),
       isAudio: false,
       date: essence.metadata?.issue_date,
       handle: essence.createdBy?.handle,
+      isCollectedByMe: essence?.isCollectedByMe,
+      collectMw: essence?.collectMw?.type === "COLLECT_FREE" ? "Free" : "Paid",
     }
     essence.metadata?.attributes.map((attribute: any) => {
       if (attribute.trait_type === "title") {

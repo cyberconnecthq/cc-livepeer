@@ -56,7 +56,8 @@ export default function Video() {
     })
       .then(({ data }) => {
         console.log('GET_ALL_ESSENCE_VIDEOS video page res:', data)
-        const parsedVideos = data.essenceByFilter.map((essence: any) => essenceResponseToVideo(essence));
+        const essenceNodes = data.essencesBy?.edges.map((edge: any) => edge.node) || [];
+        const parsedVideos = essenceNodes.map((essence: any) => essenceResponseToVideo(essence));
         setRelatedVideos(parsedVideos.filter((v) => v.id !== id))
       })
       .catch((err) => {

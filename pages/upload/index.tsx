@@ -17,7 +17,7 @@ import {
 import { randPhrase } from "@ngneat/falso";
 import { AuthContext } from "../../context/auth";
 import { v4 as uuidv4 } from "uuid";
-import { ESSENCE_APP_ID } from "../../constants";
+import { ESSENCE_APP_ID, MIN_MINT_PRICE, MAX_MINT_PRICE} from "../../constants";
 import getImage from "../../lib/getImage";
 import { Input, Switch } from '@nextui-org/react';
 
@@ -61,6 +61,22 @@ export default function Upload() {
 	const [getRelayActionStatus] = useLazyQuery(RELAY_ACTION_STATUS);
 	const [relay] = useMutation(RELAY);
   const [relayActionId, setRelayActionId] = useState<string | null>(null);
+
+  const handleAmountChange = event => {
+    // console.log("Amount::", event.target.value)
+    // const value = Math.max(MIN_MINT_PRICE, Math.min(MAX_MINT_PRICE, parseFloat(event.target.value)));
+    let value = Number(event.target.value);
+    if (isNaN(value)) {
+      value = 0.01;
+    } else if (value > MAX_MINT_PRICE) {
+      value = MAX_MINT_PRICE
+    } else if (value < MIN_MINT_PRICE) {
+      value = MIN_MINT_PRICE
+    }
+    // console.log("value::", value)
+    setMiddleware({...middleware,  amount: String(value*10**18)})
+    // console.log("middleware::", middleware)
+  };
 
 	const registerEssence = async ({ livepeerId, video, title, description, location, category, thumbnail, UploadedDate }: IRegisterEssenceVideo) => {
 		try {
@@ -188,7 +204,7 @@ export default function Upload() {
 			};
 
 			localStorage.setItem(
-				"relayingPosts",
+				"indexingPosts",
 				JSON.stringify([...indexingPosts, relayingPost])
 			);
 			/* Set the indexingPosts in the state variables */
@@ -198,7 +214,7 @@ export default function Upload() {
       toast("Your essence is being relayed...", {icon:'⏳'}) //info("Your essence is being relayed.");
 		} catch (error) {
 			/* Set the indexingPosts in the state variables */
-			// setIndexingPosts([...indexingPosts]);
+			setIndexingPosts([...indexingPosts]);
 			/* Display error message */
 			const message = error.message as string;
 			toast.error(message);
@@ -326,15 +342,6 @@ export default function Upload() {
               ).toFixed()}%`
             : "Upload"}</p>
               </button>
-              {/* {assets?.map((asset) => (
-                  <div key={asset.id}>
-                    <div>
-                      <div>Asset Name: {asset?.name}</div>
-                      <div>Playback URL: {asset?.playbackUrl}</div>
-                      <div>IPFS CID: {asset?.storage?.ipfs?.cid ?? 'None'}</div>
-                    </div>
-                  </div>
-                ))} */}
                 {error && <div>{error.message}</div>}
             </div>
           </div>
@@ -362,7 +369,7 @@ export default function Upload() {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     type="text"
-                    placeholder="Bali - Indonesia"
+                    placeholder="San Francisco - CA"
                     className="border-borderWhiteGray mt-2 h-12 rounded-md  border bg-transparent p-2 focus:outline-none dark:border-[#444752]  dark:text-white dark:placeholder:text-gray-600"
                   />
                 </div>
@@ -432,8 +439,10 @@ export default function Upload() {
                         labelLeft="$"
                         labelRight="BUSD"
                         placeholder="1.00"
+                        // min={String(MIN_MINT_PRICE)}
+                        // max={String(MAX_MINT_PRICE)}
                         value={Number(middleware.amount) / 10**18}
-                        onChange={(e) => setMiddleware({...middleware,  amount: String(Number(e.target.value)*10**18)})}
+                        onChange={handleAmountChange}
                   />
                   <label className="text-sm text-gray-600  dark:text-[#9CA3AF]">Total Supply</label>
                   <Input
@@ -450,10 +459,6 @@ export default function Upload() {
                     initialChecked={middleware.subscribeRequired}
                     onChange={(e)=> {setMiddleware({...middleware,  subscribeRequired: e.target.checked})}} />
                   </div>
-                  // totalSupply
-                  // amount
-                  // currency
-                  // subscribeRequired
                   }
                  
                 </div>

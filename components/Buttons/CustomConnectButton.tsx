@@ -66,7 +66,10 @@ export default function CustomConnectButton({handle, avatar, metadata} : IPrimar
                 {(() => {
                   if (!connected) {
                     return (
-                      <button onClick={openConnectModal} type="button">
+                      <button onClick={openConnectModal} 
+                      type="button"
+                      className="flex flex-row items-center  justify-between  rounded-lg bg-blue-500 py-2 px-4 text-white hover:bg-blue-700"
+                      >
                         Connect Wallet
                       </button>
                     );

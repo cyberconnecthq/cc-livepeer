@@ -1,10 +1,11 @@
 import moment from "moment";
 import Link from "next/link";
 import React from "react";
-import { BiCheck } from "react-icons/bi";
+import { BiCheck, BiCollection } from "react-icons/bi";
 import getImage from "../lib/getImage";
 import { IVideo } from "../types";
-
+import {BsCollectionFill, BsCollection} from 'react-icons/bs'
+import { Colors } from "../constants/colors";
 // import Image from "next/image"
 // import { Image } from "@nextui-org/react";
 
@@ -14,7 +15,7 @@ interface IProps {
 }
 
 const Video: React.FC<IProps> = ({ video, horizontal }) => {
-  console.log("video.title", video.title, "horizontal", horizontal);
+  console.log("video", video)
   return (
     <Link className="cursor-pointer" href={`/video/${video.id}`}>
       <div
@@ -50,11 +51,17 @@ const Video: React.FC<IProps> = ({ video, horizontal }) => {
               {video.category} • {moment(Date.parse(video.date)).fromNow()}
             </p>
           )}
-          <p className="text-sm flex items-center text-subtitle-light mt-1">
+          <div> 
+            <p className="text-sm flex items-center text-subtitle-light mt-1">
             {horizontal ? null : video.category + " • "}
-            {video?.handle ? video?.handle : "..."}
-            <BiCheck size="20px" color="green" className="ml-1" />
-          </p>
+            {(video?.handle ? video?.handle : "...") + " • " }
+            {(video?.isCollectedByMe ? "Collected" : "Not Collected")}
+            {(video?.isCollectedByMe ?<BsCollectionFill size="20px" color={Colors.primary} className="ml-1"/> : <BsCollection size="20px" color={Colors.primary} className="ml-1"/>)}  
+            {" • " + (video?.collectMw ? (video?.collectMw === "Free" ? "Free" : "Paid" ): "")}
+            </p>
+              
+          </div>
+          
         </div>
       </div>
     </Link>

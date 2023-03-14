@@ -22,20 +22,20 @@ export default function Home() {
       query: GET_ALL_ESSENCE_VIDEOS,
       variables: {
         appID: ESSENCE_APP_ID,
-        me: address,
+        me: address || "0x0000000000000000000000000000000000000000",
       },
       fetchPolicy: "network-only",
     }).then(({ data }) => {
-      console.log("Videos", data);
-      const parsedVideos = data.essenceByFilter.map((essence: any) => essenceResponseToVideo(essence));
-      console.log("Parsed Videos", parsedVideos);
+      // console.log("Videos", data);
+      const essenceNodes = data.essencesBy?.edges.map((edge: any) => edge.node) || [];
+      const parsedVideos = essenceNodes.map((essence: any) => essenceResponseToVideo(essence));
       
       let filteredVideos = parsedVideos
       if (category !== "" && category !== "All"){
-        console.log("Category", category)
+        // console.log("Category", category)
         filteredVideos = parsedVideos.filter((video) => { video.category === category })
       }
-      console.log("Filtered Videos", filteredVideos);
+      // console.log("Filtered Videos", filteredVideos);
       setVideos(filteredVideos);
       setLoading(false);
     });

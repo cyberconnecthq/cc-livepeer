@@ -26,18 +26,18 @@ export default function Profile() {
       },
       fetchPolicy: "network-only",
     }).then(({ data }) => {
-      console.log("My Essences", data);
+      // console.log("My Essences", data);
       const essencesArr = data?.address?.wallet?.primaryProfile?.essences?.edges.map((edge: any) => edge.node);
       // essencesArr.filter()
-      console.log("essencesArr", essencesArr);
+      // console.log("essencesArr", essencesArr);
       const parsedVideos = essencesArr.map((essence: any) => essenceResponseToVideo(essence));
-      console.log("Parsed Videos", parsedVideos);
+      // console.log("Parsed Videos", parsedVideos);
       let filteredVideos = parsedVideos
       if (category !== "" && category !== "All"){
-        console.log("Category", category)
+        // console.log("Category", category)
         filteredVideos = parsedVideos.filter((video) => { video.category === category })
       }
-      console.log("Filtered Videos", filteredVideos);
+      // console.log("Filtered Videos", filteredVideos);
       setVideos(filteredVideos);
       setLoading(false);
     });

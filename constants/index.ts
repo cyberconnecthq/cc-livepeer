@@ -10,6 +10,8 @@ const DOMAIN = "cc-livepeer.com"; // Domain name
 const ACCESS_TOKEN_KEY = 'accessToken'
 const REFRESH_TOKEN_KEY = 'CC_REFRESH_TOKEN'
 const WALLET_KEY = 'address'
+const MIN_MINT_PRICE = 0.01;
+const MAX_MINT_PRICE = 10000000;
 export {
   APP_NAME,
   APP_DESCRIPTION,
@@ -22,5 +24,7 @@ export {
   DOMAIN,
   ACCESS_TOKEN_KEY,
   REFRESH_TOKEN_KEY,
-  WALLET_KEY
+  WALLET_KEY,
+  MIN_MINT_PRICE,
+  MAX_MINT_PRICE
 }

@@ -92,7 +92,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 		  setIsLoggedIn(false)
 		},
 	  })
-	  useEffect(() => {
+	
+	useEffect(() => {
 		setIsLoggedIn(
 		  address &&
 			status === 'connected' &&
@@ -150,18 +151,27 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 					);
 					console.log("filtered", filtered)
 					setIndexingPosts(filtered);
-					localStorage.setItem("relayingPosts", JSON.stringify(filtered));
+					localStorage.setItem("indexingPosts", JSON.stringify(filtered));
 					await fetch();
+				} else if ( res.data.relayActionStatus?.reason) {
+					toast.error(res.data.relayActionStatus?.reason)
+					const filtered = indexingPosts.filter(
+						(item: any) => item.relayActionId !== post.relayActionId
+					);
+					console.log("filtered", filtered)
+					setIndexingPosts(filtered);
+					localStorage.setItem("indexingPosts", JSON.stringify(filtered));
 				}
 
-				if (indexingPosts.length > 0) {
-					await new Promise((resolve) => setTimeout(resolve, 3000));
+				if (indexingPosts?.length > 0) {
+					await new Promise((resolve) => setTimeout(resolve, 5000));
+					console.log("length of indexing posts", indexingPosts.length)
 					await sync();
 				}
 			});
 		}
 
-		if (address && indexingPosts?.length) {
+		if (address && indexingPosts?.length > 0) {
 			sync();
 		}
 	}, [indexingPosts, address]);
@@ -169,7 +179,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	useEffect(() => {
 		const accessToken = localStorage.getItem("accessToken");
 		const address = localStorage.getItem("address");
-		const relayingPosts = localStorage.getItem("relayingPosts");
+		const relayingPosts = localStorage.getItem("indexingPosts");
 		console.log("setting access token and address", accessToken, address);
 		if (accessToken && address) {
 			setAccessToken(accessToken);

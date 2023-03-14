@@ -26,6 +26,9 @@ export interface IVideo {
   author: string;
   createdAt: BigInt;
   handle: string;
+  isCollectedByMe: boolean;
+  collectMw: string;
+  
 }
 
 
