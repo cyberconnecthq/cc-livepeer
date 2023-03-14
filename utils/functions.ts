@@ -18,7 +18,7 @@ export const essenceResponseToVideo = (essence: any): IVideo =>  {
       isAudio: false,
       date: essence.metadata?.issue_date,
       author: essence.createdBy?.handle,
-      createdAt: Date.parse(essence.createdBy?.issue_date),
+      createdAt: BigInt(Date.parse(essence.createdBy?.issue_date)),
       handle: essence.createdBy?.handle,
       isCollectedByMe: essence?.isCollectedByMe,
       collectMw: essence?.collectMw?.type === "COLLECT_FREE" ? "Free" : "Paid",
