@@ -1,5 +1,6 @@
 import axios from "axios";
 import format from "date-fns/format";
+import { Address } from "wagmi";
 import getImage from "../lib/getImage";
 import {IVideo} from "../types";
 const apiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY || "";
@@ -20,7 +21,8 @@ export const essenceResponseToVideo = (essence: any): IVideo =>  {
       author: essence.createdBy?.handle || essence.createdBy?.owner?.address || "Unknown",
       handle: essence.createdBy?.handle,
       isCollectedByMe: essence?.isCollectedByMe,
-      collectMw: essence?.collectMw?.type === "COLLECT_FREE" ? "Free" : "Paid",
+      collectMw: essence?.collectMw,
+      contractAddress: essence?.contractAddress as Address
     }
     essence.metadata?.attributes.map((attribute: any) => {
       if (attribute.trait_type === "title") {
@@ -200,3 +202,23 @@ export const pollRelayActionStatus = async (relayActionId: string) => {
   return resData.data.relayActionStatus;
 };
 
+
+
+export default function handleCollectEntryError(e: Error) {
+  const msg = e.message;
+  let buttonMsg = 'Collect Post';
+  if (msg.includes('NOT_STARTED')) {
+    buttonMsg = 'Not Started';
+  } else if (msg.includes('ENDED')) {
+    buttonMsg = 'Ended';
+  } else if (msg.includes('NOT_PROFILE_OWNER')) {
+    buttonMsg = "You don't have a ccProfile";
+  } else if (msg.includes('COLLECT_LIMIT_EXCEEDED')) {
+    buttonMsg = 'Sold Out';
+  } else if (msg.includes('BEP40: transfer amount exceeds allowance')) {
+    buttonMsg = 'Approve';
+  } else if (msg.includes('BEP40: transfer amount exceeds balance')) {
+    buttonMsg = 'Insufficient Balance';
+  }
+  return buttonMsg;
+}

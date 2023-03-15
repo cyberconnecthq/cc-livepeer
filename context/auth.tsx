@@ -22,21 +22,20 @@ import { useAccount } from "wagmi";
 import { ACCESS_TOKEN_KEY, ESSENCE_APP_ID, REFRESH_TOKEN_KEY, WALLET_KEY, DOMAIN } from '../constants'
 import toast from "react-hot-toast";
 
+// This AuthContext is used to store the authentication state as well as the indexing state of essences and connected profiles
 export const AuthContext = createContext<IAuthContext>({
 	address: undefined,
 	accessToken: undefined,
 	primaryProfile: undefined,
-	indexingProfiles: [],
 	indexingPosts: [],
-	profileCount: 0,
 	postCount: 0,
 	posts: [],
 	profiles: [],
+	collectingPosts: [],
 	setAccessToken: () => { },
 	setPrimaryProfile: () => { },
-	setIndexingProfiles: () => { },
 	setIndexingPosts: () => { },
-	setProfileCount: () => { },
+	setCollectingPosts: () => { },
 	setPostCount: () => { },
 	setPosts: () => { },
 	setProfiles: () => { },
@@ -47,10 +46,6 @@ export const AuthContext = createContext<IAuthContext>({
 });
 AuthContext.displayName = "AuthContext";
 
-// primaryProfile,
-// 		indexingPosts,
-// 		connectWallet,
-// 		checkNetwork,
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	/* State variable to store the provider */
 	const [provider, setProvider] = useState<Web3Provider | undefined>(undefined);
@@ -66,14 +61,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 		IPrimaryProfileCard | undefined
 	>(undefined);
 
-	/* State variable to store the initial number of accounts */
-	const [profileCount, setProfileCount] = useState<number>(0);
-
 	/* State variable to store the initial number of posts */
 	const [postCount, setPostCount] = useState<number>(0);
 
-	/* State variable to store indexing profiles */
-	const [indexingProfiles, setIndexingProfiles] = useState<IAccountCard[]>([]);
 
 	/* State variable to store indexing posts */
 	const [indexingPosts, setIndexingPosts] = useState<IPostCard[]>([]);
@@ -235,83 +225,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 		};
 	}, [address, accessToken]);
 
-	useEffect(() => {
-		if (!(address && accessToken)) return;
-
-		let query: any;
-		let timer: number = Date.now() + 1000 * 60 * 10;
-		let mount = true;
-
-		const fetch = async () => {
-			try {
-				/* Fetch all profiles */
-				query = useCancellableQuery({
-					query: ACCOUNTS,
-					variables: {
-						address: address,
-					},
-				});
-				const res = await query;
-
-				/* Get the profiles */
-				const edges = res?.data?.address?.wallet?.profiles?.edges;
-				const nodes = edges?.map((edge: any) => edge?.node) || [];
-
-				/* Get the total count of posts */
-				const count = nodes.length;
-
-				/* Get primary profile */
-				const primaryProfile = nodes?.find((node: any) => node?.isPrimary);
-
-				/* Set the primary profile if exists (might be the first one) */
-				if (primaryProfile) setPrimaryProfile(primaryProfile);
-
-				if (indexingProfiles.length === 0) {
-					/* Set the profiles */
-					setProfiles([...nodes]);
-
-					/* Set the initial number of profiles */
-					setProfileCount(count);
-				} else {
-					if (profileCount + indexingProfiles.length === count) {
-						/* Set the posts in the state variable */
-						setProfiles([...nodes]);
-
-						/* Set the posts count in the state variable */
-						setProfileCount(count);
-
-						/* Reset the indexingProfiles in the state variable */
-						setIndexingProfiles([]);
-					} else {
-						/* Fetch again after a 2s timeout */
-						if (Date.now() < timer) {
-							/* Wait 2s before fetching data again */
-							console.log("Fetching profiles again.");
-							await timeout(2000);
-							if (mount) fetch();
-						} else {
-							/* Reset the indexingProfiles in the state variable */
-							setIndexingProfiles([]);
-						}
-					}
-				}
-			} catch (error) {
-				/* Display error message */
-				console.error(error);
-
-				/* Reset the indexingProfiles in the state variable */
-				setIndexingProfiles([]);
-			}
-		};
-		fetch();
-
-		return () => {
-			mount = false;
-			if (query) {
-				query.cancel();
-			}
-		};
-	}, [address, accessToken, indexingProfiles, profileCount]);
 
 	useEffect(() => {
 		if (!(address && accessToken)) return;
@@ -447,17 +360,13 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				address,
 				accessToken,
 				primaryProfile,
-				profileCount,
 				postCount,
 				posts,
 				profiles,
-				indexingProfiles,
 				indexingPosts,
 				setAccessToken,
 				setPrimaryProfile,
-				setProfileCount,
 				setPostCount,
-				setIndexingProfiles,
 				setIndexingPosts,
 				setPosts,
 				setProfiles,

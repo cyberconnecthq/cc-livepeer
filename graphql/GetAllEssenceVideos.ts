@@ -8,6 +8,7 @@ query essencesBy($appID: String, $me: AddressEVM!) {
         essenceID
         tokenURI
         name
+        contractAddress
         createdBy {
           avatar
           handle
@@ -41,6 +42,7 @@ query essencesBy($appID: String, $me: AddressEVM!) {
         collectMw {
           contractAddress
           type
+          data
         }
         isCollectedByMe(me: $me)
         collectedBy(first:100) {

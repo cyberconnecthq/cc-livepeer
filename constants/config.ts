@@ -18,6 +18,11 @@ import { publicProvider } from 'wagmi/providers/public'
 // bsc.name = 'BNB Chain'
 export const availableChains = [bscTestnet]; // mainnet, goerli
 
+export const CC_PROFILE_CONTRACT_ADDRESS = {
+  [bsc.id]: '0x2723522702093601e6360cae665518c4f63e9da6',
+  [bscTestnet.id]: '0x57e12b7a5f38a7f9c23ebd0400e6e53f2a45f271'
+};
+
 const NODEREAL_RPCS = {
   [mainnet.id]: {
     http: `https://eth-mainnet.nodereal.io/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,

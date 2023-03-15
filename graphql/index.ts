@@ -7,7 +7,7 @@ export { ACCOUNTS } from "./Accounts";
 export { PRIMARY_PROFILE } from "./PrimaryProfile";
 export { PRIMARY_PROFILE_ESSENCES } from "./PrimaryProfileEssences";
 export { ESSENCE_BY_ID } from "./EssenceById";
-export { GET_ALL_ESSENCE_VIDEOS } from "./GetAllVideos";
+export { GET_ALL_ESSENCE_VIDEOS } from "./GetAllEssenceVideos";
 export {CREATE_COLLECT_ESSENCE_TYPED_DATA} from "./CreateCollectEssenceTypedData";
 export { GET_NONCE } from "./GetNonce";
 export { VERIFY } from "./Verify";

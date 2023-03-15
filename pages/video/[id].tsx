@@ -92,7 +92,7 @@ export default function Video() {
                 </div>
                 <div className="flex flex-row items-center">
                   {/* <p className="text-gray-500 mr-2">Share</p> */}
-                  <CollectBtn profileID={essence.createdBy.profileID} essenceID={essence.essenceID} isCollectedByMe={essence.isCollectedByMe} collectMw={essence.collectMw} /> 
+                  <CollectBtn profileID={essence.createdBy.profileID} essenceID={essence.essenceID} isCollectedByMe={essence.isCollectedByMe} collectMw={essence.collectMw} nftAddress={essence.contractAddress} /> 
                   {/* profileID={1} essenceID={1} isCollectedByMe={false} collectMw={""} /> */}
                 </div>
               </div>

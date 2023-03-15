@@ -6,8 +6,8 @@ import {
     createAuthenticationAdapter,
     AuthenticationStatus,
   } from '@rainbow-me/rainbowkit'
-  import { useAccount, useNetwork, useProvider, WagmiConfig } from 'wagmi'
-  import { client, chains } from '../constants/config'
+  import { useAccount, useProvider,  } from 'wagmi'
+  import { chains } from '../constants/config'
   import { GET_NONCE, VERIFY } from '../graphql';
   import { useEffect, useState, useContext } from 'react'
   import { AuthContext } from './auth'
@@ -16,7 +16,9 @@ import {
   import { useMutation } from '@apollo/client';
   import { ThemeContext } from "./ThemeContext";
   
-  
+  // This AuthProvider is a wrapper around RainbowKit's RainbowKitAuthenticationProvider
+  // It handles the authentication flow and provides the authentication status to the rest of the app
+  // We are using a custom adapter to handle the CyberConnect API authentication flow
   export function RainbowAuthProvider({ children }: { children: React.ReactNode }) {
     const [getNonce] = useMutation(GET_NONCE);
     const [verify] = useMutation(VERIFY);
@@ -98,11 +100,6 @@ import {
         <RainbowKitProvider
           chains={chains}
           theme={theme === 'dark' ? midnightTheme() : undefined}
-          // theme={midnightTheme({
-          //   accentColor: '#6AF7AC',
-          //   accentColorForeground: 'black',
-          //   borderRadius: 'small',
-          // })}
         >
           {children}
         </RainbowKitProvider>

@@ -1,4 +1,5 @@
 import { Web3Provider } from "@ethersproject/providers";
+import { Address } from "wagmi";
 
 
 export interface IRegisterEssenceVideo {
@@ -26,7 +27,8 @@ export interface IVideo {
   author: string;
   handle: string;
   isCollectedByMe: boolean;
-  collectMw: string;
+  collectMw: Record<string, any>;
+  contractAddress: Address;
   
 }
 
@@ -35,21 +37,19 @@ export interface IAuthContext {
 	address: string | undefined;
 	accessToken: string | undefined;
 	primaryProfile: IPrimaryProfileCard | undefined;
-	profileCount: number;
 	postCount: number;
 	posts: IPostCard[];
 	profiles: IAccountCard[];
-	indexingProfiles: IAccountCard[];
 	indexingPosts: IPostCard[];
 	isLoggedIn: boolean;
+	collectingPosts: IPostCard[];
 	setAccessToken: (accessToken: string | undefined) => void;
 	setPrimaryProfile: (primaryProfile: IPrimaryProfileCard | undefined) => void;
-	setProfileCount: (profileCount: number) => void;
 	setPostCount: (postCount: number) => void;
 	setPosts: (posts: IPostCard[]) => void;
 	setProfiles: (profiles: IAccountCard[]) => void;
-	setIndexingProfiles: (indexingProfiles: IAccountCard[]) => void;
 	setIndexingPosts: (indexingPosts: IPostCard[]) => void;
+	setCollectingPosts: (collectingPosts: IPostCard[]) => void;
 	connectWallet: () => Promise<Web3Provider>;
 	checkNetwork: (provider: Web3Provider) => Promise<void>;
 	setIsLoggedIn: (isLoggedIn: boolean) => void;
@@ -164,6 +164,7 @@ export interface IPostCard {
 	isCollectedByMe: boolean;
 	isIndexed?: boolean;
 	collectMw?: any;
+	contractAddress?: Address;
 }
 
 export interface IEssenceMwCard {

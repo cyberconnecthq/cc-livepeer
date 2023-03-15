@@ -17,7 +17,7 @@ import {
 import { randPhrase } from "@ngneat/falso";
 import { AuthContext } from "../../context/auth";
 import { v4 as uuidv4 } from "uuid";
-import { ESSENCE_APP_ID, MIN_MINT_PRICE, MAX_MINT_PRICE} from "../../constants";
+import { ESSENCE_APP_ID, MIN_MINT_PRICE, MAX_MINT_PRICE, BUSD_CONTRACT_ADDRESS} from "../../constants";
 import getImage from "../../lib/getImage";
 import { Input, Switch } from '@nextui-org/react';
 
@@ -37,7 +37,7 @@ export default function Upload() {
     recipient: address,
     totalSupply: '1000',
     amount: '1000000000000000000',
-    currency: '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
+    currency: BUSD_CONTRACT_ADDRESS,
     subscribeRequired: false}
 
   const [title, setTitle] = useState<string>('')

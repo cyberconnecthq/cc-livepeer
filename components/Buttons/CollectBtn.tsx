@@ -3,26 +3,94 @@ import { useMutation } from "@apollo/client";
 import { CREATE_COLLECT_ESSENCE_TYPED_DATA, RELAY } from "../../graphql";
 import { AuthContext } from "../../context/auth";
 import { Button, Spacer, Loading } from "@nextui-org/react";
-
+import { Address, erc20ABI, erc721ABI, useAccount, useContractReads, useContractWrite, useNetwork, usePrepareContractWrite, useSigner } from 'wagmi';
+import  ABI from '../../constants/ABI.json';
+import { BigNumber } from 'ethers';
 import toast from "react-hot-toast";
+import { CC_PROFILE_CONTRACT_ADDRESS } from "../../constants/config";
+import handleCollectEntryError from "../../utils/functions";
+import { BUSD_CONTRACT_ADDRESS } from "../../constants";
+
 function CollectBtn({
 	profileID,
 	essenceID,
 	isCollectedByMe,
 	collectMw,
+	nftAddress
 }: {
 	profileID: number;
 	essenceID: number;
 	isCollectedByMe: boolean;
 	collectMw: Record<string, any>;
+	nftAddress: Address;
 }) {
-	const { accessToken, connectWallet, checkNetwork } = useContext(AuthContext);
+	const { accessToken, connectWallet, checkNetwork, setCollectingPosts, collectingPosts ,primaryProfile } = useContext(AuthContext);
 	const [createCollectEssenceTypedData] = useMutation(
 		CREATE_COLLECT_ESSENCE_TYPED_DATA
 	);
 	const [relay] = useMutation(RELAY);
 	const [stateCollect, setStateCollect] = useState(isCollectedByMe);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(false);	
+	const [totalCollected, setTotalCollected] = useState<BigNumber>();
+	const [isUserCollected, setIsUserCollected] = useState(false);
+	const [readContractsLoading, setReadContractsLoading] = useState(true);
+	const { chain } = useNetwork()
+	const { address: loggedInAddress } = useAccount()
+	let paidCurrency= "" as Address;
+	let paidAmount = "";
+
+	const collectMwData = JSON.parse(collectMw?.data)
+	if (collectMw?.type !== "COLLECT_FREE") {
+		paidCurrency = collectMwData?.Currency
+		paidAmount = collectMwData?.Amount
+		const totalCollectedContract = {
+			address: nftAddress,
+			abi: erc721ABI,
+			functionName: 'totalSupply' as const,
+			chainId: chain.id,
+		  };
+		  const isUserCollectedContract = {
+			address: nftAddress,
+			abi: erc721ABI,
+			functionName: 'balanceOf' as const,
+			chainId: chain.id,
+			args: [loggedInAddress] as [Address],
+		  };
+		  const userBusdBalance = {
+			address: paidCurrency as Address,
+			abi: erc20ABI,
+			functionName: 'balanceOf' as const,
+			chainId: chain.id,
+			args: [loggedInAddress] as [Address],
+		  };
+		  const essencePaidCollect = {
+			address: paidCurrency as Address,
+			abi: erc20ABI,
+			functionName: 'balanceOf' as const,
+			chainId: chain.id,
+			args: [loggedInAddress] as [Address],
+		  };
+		  console.log("totalCollectedContract", totalCollectedContract);
+		  console.log("isUserCollectedContract", isUserCollectedContract);
+		  console.log("userBusdBalance", userBusdBalance);
+		  const { data: readsData, refetch: refetchRead } = useContractReads({
+			contracts: [totalCollectedContract, isUserCollectedContract, userBusdBalance],
+			onSuccess(data) {
+			  console.log("data", data);
+			  setReadContractsLoading(false);
+			  const _totalCollected = data[0];
+			  const _isUserCollected = data[1]?.toNumber() > 0;
+			  const _userBusdBalance = data[2];
+			  console.log("totalCollected", _totalCollected.toString());
+			  console.log("isUserCollected", _isUserCollected);
+			  console.log("userBusdBalance", _userBusdBalance.toString());
+			  setTotalCollected(_totalCollected);
+			  setIsUserCollected(_isUserCollected);
+			},
+		  });
+		  console.log('readsData', readsData);
+	}
+	
 
 	const handleOnClick = async () => {
 		try {
@@ -42,7 +110,49 @@ function CollectBtn({
 
 			/* Get the address from the provider */
 			const address = await signer.getAddress();
+			if (collectMw?.type == "COLLECT_PAID") {
+				await refetchRead();
 
+				const { config: erc20Config, error } = usePrepareContractWrite({
+					address: paidCurrency,
+					abi: erc20ABI,
+					functionName: 'approve',
+					args: [collectMw.contractAddress, BigNumber.from("10000000000000000000")],
+					
+				  })
+				const { write: writeAllowance, data, isLoading, isSuccess} = useContractWrite(erc20Config)
+
+				const allowance = await writeAllowance?.()
+				const { config } = usePrepareContractWrite({
+					address: CC_PROFILE_CONTRACT_ADDRESS[chain.id] as Address,
+					abi: ABI,
+					functionName: 'collect',
+					chainId: chain.id,
+					args: [{ collector: loggedInAddress, profileID, essenceID }, '0x', '0x'],
+					onError: async function (error) {
+					  const message = handleCollectEntryError(error);
+					  toast.error(message);
+					  setLoading(false);
+					  return;
+					},
+				  });
+				  const {
+					data: txData,
+					write,
+					isSuccess: isTxSuccess,
+					isLoading: contractWriteLoading,
+				  } = useContractWrite({
+					...config,
+					async onSuccess(data) {
+					  console.log('Success', data);
+					  setLoading(true);
+					  await data.wait();
+					  await refetchRead();
+					  setLoading(false);
+					},
+				  });
+			}
+	
 			/* Get the network from the provider */
 			const network = await provider.getNetwork();
 
@@ -76,11 +186,37 @@ function CollectBtn({
 					},
 				},
 			});
-			const txHash = relayResult.data?.relay?.relayTransaction?.txHash;
 
-			/* Log the transation hash */
-			console.log("~~ Tx hash ~~");
-			console.log(txHash);
+			const relayActionId = relayResult.data.relay.relayActionId;
+
+			/* Close Post Modal */
+			// handleModal(null, "");
+
+			const relayingPost = {
+				createdBy: {
+					handle: primaryProfile?.handle,
+					avatar: primaryProfile?.avatar,
+					metadata: primaryProfile?.metadata,
+					profileID: primaryProfile?.profileID,
+				},
+				essenceID: 0, // Value will be updated once it's indexed
+				tokenURI: `https://cyberconnect.mypinata.cloud/ipfs/${ipfsHash}`,
+				isIndexed: false,
+				isCollectedByMe: false,
+				collectMw: undefined,
+       			metadata_id: undefined,
+				relayActionId: relayActionId,
+			};
+
+			localStorage.setItem(
+				"collectingPosts",
+				JSON.stringify([...collectingPosts, relayingPost])
+			);
+			/* Set the collectingPosts in the state variables */
+			setCollectingPosts([...collectingPosts, relayingPost]);
+
+			/* Display success message */
+      		toast("Your essence is being relayed...", {icon:'⏳'}) //info("Your essence is being relayed.");
 
 			/* Set the state to true */
 			setStateCollect(true);

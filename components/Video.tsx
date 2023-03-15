@@ -57,7 +57,7 @@ const Video: React.FC<IProps> = ({ video, horizontal }) => {
             {(video?.handle ? video?.handle : "...") + " • " }
             {(video?.isCollectedByMe ? "Collected" : "Not Collected")}
             {(video?.isCollectedByMe ?<BsCollectionFill size="20px" color={Colors.primary} className="ml-1"/> : <BsCollection size="20px" color={Colors.primary} className="ml-1"/>)}  
-            {" • " + (video?.collectMw ? (video?.collectMw === "Free" ? "Free" : "Paid" ): "")}
+            {" • " + (video?.collectMw?.type ? (video?.collectMw?.type === "COLLECT_FREE" ? "Free" : "Paid" ): "")}
             </p>
               
           </div>
