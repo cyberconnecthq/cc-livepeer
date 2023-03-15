@@ -31,9 +31,11 @@ export const AuthContext = createContext<IAuthContext>({
 	postCount: 0,
 	posts: [],
 	profiles: [],
+	// collectingPosts: [],
 	setAccessToken: () => { },
 	setPrimaryProfile: () => { },
 	setIndexingPosts: () => { },
+	// setCollectingPosts: () => { },
 	setPostCount: () => { },
 	setPosts: () => { },
 	setProfiles: () => { },
@@ -65,9 +67,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
 	/* State variable to store indexing posts */
 	const [indexingPosts, setIndexingPosts] = useState<IPostCard[]>([]);
-	
-	/* State variable to store indexing posts */
-	// const [collectingPosts, setCollectingPosts] = useState<IPostCard[]>([]);
 
 	/* State variable to store the posts */
 	const [posts, setPosts] = useState<IPostCard[]>([]);
@@ -78,12 +77,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
 	const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>(undefined)
 	
+	
 	const { address, status } = useAccount({
 		onDisconnect() {
 		  setIsLoggedIn(false)
 		},
 	  })
-	
 	useEffect(() => {
 		setIsLoggedIn(
 		  address &&
@@ -170,13 +169,13 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	useEffect(() => {
 		const accessToken = localStorage.getItem("accessToken");
 		const address = localStorage.getItem("address");
-		const relayingPosts = localStorage.getItem("indexingPosts");
+		const _indexingPosts = localStorage.getItem("indexingPosts");
 		console.log("setting access token and address", accessToken, address);
 		if (accessToken && address) {
 			setAccessToken(accessToken);
 			// setAddress(address);
-			if (relayingPosts?.length) {
-				setIndexingPosts(JSON.parse(relayingPosts));
+			if (_indexingPosts?.length) {
+				setIndexingPosts(JSON.parse(_indexingPosts));
 			}
 		}
 	}, []);
@@ -291,8 +290,10 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 			}
 
 			/* Ethers Web3Provider wraps the standard Web3 provider injected by MetaMask */
-			const web3Provider = new ethers.providers.Web3Provider(detectedProvider);
-
+			const web3Provider = new ethers.providers.Web3Provider(detectedProvider, 'any');
+			// const provider = getProvider() as ExternalProvider
+			// provider.send
+			// web3Provider = markRaw(web3Provider)
 			/* Connect to Ethereum. MetaMask will ask permission to connect user accounts */
 			await web3Provider.send("eth_requestAccounts", []);
 
@@ -364,13 +365,11 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				postCount,
 				posts,
 				profiles,
-				// collectingPosts,
 				indexingPosts,
 				setAccessToken,
 				setPrimaryProfile,
 				setPostCount,
 				setIndexingPosts,
-				// setCollectingPosts,
 				setPosts,
 				setProfiles,
 				checkNetwork,

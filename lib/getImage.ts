@@ -1,5 +1,4 @@
 import getIPFSLink from "./getIPFSLink";
-import imagekitURL from "./getImageKit";
 
 /**
  *
