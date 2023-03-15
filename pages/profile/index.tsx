@@ -64,7 +64,7 @@ export default function Profile() {
                 {Array(10)
                   .fill(0)
                   .map((_, index) => (
-                    <div className="w-80">
+                    <div key={index} className="w-80">
                       <Loader />
                     </div>
                   ))}
@@ -92,7 +92,7 @@ export default function Profile() {
               ) 
               :
               videos?.map((video: any) => (
-                <Video video={video} horizontal={false} />
+                <Video key={video.id} video={video} horizontal={false} />
               ))
             )}
           </div>

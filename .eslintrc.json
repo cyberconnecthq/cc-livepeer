@@ -7,5 +7,5 @@
         "path" : ["components", "pages", "styles", "utils", "public", "assets", "types", "clients", "constants", "layouts", "queries"]
       }
     }
-  },
+  }
 }

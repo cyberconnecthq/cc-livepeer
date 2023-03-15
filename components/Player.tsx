@@ -8,9 +8,9 @@ interface PlayerProps {
 }
 
 const Player: React.FC<PlayerProps> = ({ id }) => {
+  const { data: asset } = useAsset(id);
 
   try {
-    const { data: asset } = useAsset(id);
 
     return (
       <Plyr

@@ -92,6 +92,7 @@ function CollectBtn({
 		address: paidCurrency,
 		abi: erc20ABI,
 		functionName: 'approve',
+		// @ts-ignore: Unreachable code error
 		args: [collectMw.contractAddress, BigNumber.from(paidAmount), {
 			gasLimit: 1300000,
 		}],
@@ -259,13 +260,11 @@ function CollectBtn({
 		}
 	};
 	const { isLoading: waitCollectIsLoading, isSuccess: waitCollectIsSuccess } = useWaitForTransaction({
-		wait: collectData?.wait,
 		hash: collectData?.hash,
 	  })
 
 	return (
 		<Button
-			// className="collect-btn"
 			onClick={handleOnClick}
 			disabled={stateCollect}
 			auto
