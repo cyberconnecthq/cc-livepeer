@@ -31,11 +31,9 @@ export const AuthContext = createContext<IAuthContext>({
 	postCount: 0,
 	posts: [],
 	profiles: [],
-	collectingPosts: [],
 	setAccessToken: () => { },
 	setPrimaryProfile: () => { },
 	setIndexingPosts: () => { },
-	setCollectingPosts: () => { },
 	setPostCount: () => { },
 	setPosts: () => { },
 	setProfiles: () => { },
@@ -67,6 +65,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
 	/* State variable to store indexing posts */
 	const [indexingPosts, setIndexingPosts] = useState<IPostCard[]>([]);
+	
+	/* State variable to store indexing posts */
+	// const [collectingPosts, setCollectingPosts] = useState<IPostCard[]>([]);
 
 	/* State variable to store the posts */
 	const [posts, setPosts] = useState<IPostCard[]>([]);
@@ -363,11 +364,13 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				postCount,
 				posts,
 				profiles,
+				// collectingPosts,
 				indexingPosts,
 				setAccessToken,
 				setPrimaryProfile,
 				setPostCount,
 				setIndexingPosts,
+				// setCollectingPosts,
 				setPosts,
 				setProfiles,
 				checkNetwork,

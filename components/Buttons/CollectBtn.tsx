@@ -24,7 +24,7 @@ function CollectBtn({
 	collectMw: Record<string, any>;
 	nftAddress: Address;
 }) {
-	const { accessToken, connectWallet, checkNetwork, setCollectingPosts, collectingPosts ,primaryProfile } = useContext(AuthContext);
+	const { accessToken, connectWallet, checkNetwork, setIndexingPosts, indexingPosts, primaryProfile } = useContext(AuthContext);
 	const [createCollectEssenceTypedData] = useMutation(
 		CREATE_COLLECT_ESSENCE_TYPED_DATA
 	);
@@ -37,59 +37,97 @@ function CollectBtn({
 	const { chain } = useNetwork()
 	const { address: loggedInAddress } = useAccount()
 	let paidCurrency= "" as Address;
-	let paidAmount = "";
+	let paidAmount = BigNumber.from(0);
 
 	const collectMwData = JSON.parse(collectMw?.data)
 	if (collectMw?.type !== "COLLECT_FREE") {
 		paidCurrency = collectMwData?.Currency
-		paidAmount = collectMwData?.Amount
-		const totalCollectedContract = {
-			address: nftAddress,
-			abi: erc721ABI,
-			functionName: 'totalSupply' as const,
-			chainId: chain.id,
-		  };
-		  const isUserCollectedContract = {
-			address: nftAddress,
-			abi: erc721ABI,
-			functionName: 'balanceOf' as const,
-			chainId: chain.id,
-			args: [loggedInAddress] as [Address],
-		  };
-		  const userBusdBalance = {
-			address: paidCurrency as Address,
-			abi: erc20ABI,
-			functionName: 'balanceOf' as const,
-			chainId: chain.id,
-			args: [loggedInAddress] as [Address],
-		  };
-		  const essencePaidCollect = {
-			address: paidCurrency as Address,
-			abi: erc20ABI,
-			functionName: 'balanceOf' as const,
-			chainId: chain.id,
-			args: [loggedInAddress] as [Address],
-		  };
-		  console.log("totalCollectedContract", totalCollectedContract);
-		  console.log("isUserCollectedContract", isUserCollectedContract);
-		  console.log("userBusdBalance", userBusdBalance);
-		  const { data: readsData, refetch: refetchRead } = useContractReads({
-			contracts: [totalCollectedContract, isUserCollectedContract, userBusdBalance],
-			onSuccess(data) {
-			  console.log("data", data);
-			  setReadContractsLoading(false);
-			  const _totalCollected = data[0];
-			  const _isUserCollected = data[1]?.toNumber() > 0;
-			  const _userBusdBalance = data[2];
-			  console.log("totalCollected", _totalCollected.toString());
-			  console.log("isUserCollected", _isUserCollected);
-			  console.log("userBusdBalance", _userBusdBalance.toString());
-			  setTotalCollected(_totalCollected);
-			  setIsUserCollected(_isUserCollected);
-			},
-		  });
-		  console.log('readsData', readsData);
+		paidAmount = BigNumber.from(collectMwData?.Amount);
 	}
+	const totalCollectedContract = {
+		address: nftAddress,
+		abi: erc721ABI,
+		functionName: 'totalSupply' as const,
+		chainId: chain.id,
+	  };
+	const isUserCollectedContract = {
+		address: nftAddress,
+		abi: erc721ABI,
+		functionName: 'balanceOf' as const,
+		chainId: chain.id,
+		args: [loggedInAddress] as [Address],
+		};
+	const userBusdBalance = {
+		address: paidCurrency as Address,
+		abi: erc20ABI,
+		functionName: 'balanceOf' as const,
+		chainId: chain.id,
+		args: [loggedInAddress] as [Address],
+		};
+	const essencePaidCollect = {
+		address: paidCurrency as Address,
+		abi: erc20ABI,
+		functionName: 'balanceOf' as const,
+		chainId: chain.id,
+		args: [loggedInAddress] as [Address],
+		};
+	console.log("totalCollectedContract", totalCollectedContract);
+	console.log("isUserCollectedContract", isUserCollectedContract);
+	console.log("userBusdBalance", userBusdBalance);
+	const { data: readsData, refetch: refetchRead } = useContractReads({
+	contracts: [totalCollectedContract, isUserCollectedContract, userBusdBalance],
+	onSuccess(data) {
+		console.log("data", data);
+		setReadContractsLoading(false);
+		const _totalCollected = data[0];
+		const _isUserCollected = data[1]?.toNumber() > 0;
+		const _userBusdBalance = data[2];
+		console.log("totalCollected", _totalCollected.toString());
+		console.log("isUserCollected", _isUserCollected);
+		console.log("userBusdBalance", _userBusdBalance.toString());
+		setTotalCollected(_totalCollected);
+		setIsUserCollected(_isUserCollected);
+	},
+	});
+	// Allowance 
+	const { config: erc20Config, error } = usePrepareContractWrite({
+		address: paidCurrency,
+		abi: erc20ABI,
+		functionName: 'approve',
+		args: [collectMw.contractAddress, paidAmount],
+		
+	  })
+	const { write: writeAllowance, data, isLoading, isSuccess: allowanceIsSuccess} = useContractWrite(erc20Config)
+	// Collect
+	const { config } = usePrepareContractWrite({
+		address: CC_PROFILE_CONTRACT_ADDRESS[chain.id] as Address,
+		abi: ABI,
+		functionName: 'collect',
+		chainId: chain.id,
+		args: [{ collector: loggedInAddress, profileID, essenceID }, '0x', '0x'],
+		onError: async function (error) {
+		  const message = handleCollectEntryError(error);
+		  toast.error(message);
+		  setLoading(false);
+		  return;
+		},
+	  });
+	  const {
+		data: txData,
+		write: writeCollect,
+		isSuccess: isCollectSuccess,
+		isLoading: contractWriteLoading,
+	  } = useContractWrite({
+		...config,
+		async onSuccess(data) {
+		  console.log('Success', data);
+		  setLoading(true);
+		  await data.wait();
+		  await refetchRead();
+		  setLoading(false);
+		},
+	  });
+	// console.log('readsData', readsData);
 	
 
 	const handleOnClick = async () => {
@@ -113,44 +151,14 @@ function CollectBtn({
 			if (collectMw?.type == "COLLECT_PAID") {
 				await refetchRead();
 
-				const { config: erc20Config, error } = usePrepareContractWrite({
-					address: paidCurrency,
-					abi: erc20ABI,
-					functionName: 'approve',
-					args: [collectMw.contractAddress, BigNumber.from("10000000000000000000")],
+				writeAllowance?.()				
+				if (allowanceIsSuccess) {
+					console.log("allowanceIsSuccess", allowanceIsSuccess)
+					writeCollect?.()
+					console.log("isCollectSuccess", isCollectSuccess)
 					
-				  })
-				const { write: writeAllowance, data, isLoading, isSuccess} = useContractWrite(erc20Config)
-
-				const allowance = await writeAllowance?.()
-				const { config } = usePrepareContractWrite({
-					address: CC_PROFILE_CONTRACT_ADDRESS[chain.id] as Address,
-					abi: ABI,
-					functionName: 'collect',
-					chainId: chain.id,
-					args: [{ collector: loggedInAddress, profileID, essenceID }, '0x', '0x'],
-					onError: async function (error) {
-					  const message = handleCollectEntryError(error);
-					  toast.error(message);
-					  setLoading(false);
-					  return;
-					},
-				  });
-				  const {
-					data: txData,
-					write,
-					isSuccess: isTxSuccess,
-					isLoading: contractWriteLoading,
-				  } = useContractWrite({
-					...config,
-					async onSuccess(data) {
-					  console.log('Success', data);
-					  setLoading(true);
-					  await data.wait();
-					  await refetchRead();
-					  setLoading(false);
-					},
-				  });
+				}
+				
 			}
 	
 			/* Get the network from the provider */
@@ -200,7 +208,7 @@ function CollectBtn({
 					profileID: primaryProfile?.profileID,
 				},
 				essenceID: 0, // Value will be updated once it's indexed
-				tokenURI: `https://cyberconnect.mypinata.cloud/ipfs/${ipfsHash}`,
+				tokenURI: undefined,
 				isIndexed: false,
 				isCollectedByMe: false,
 				collectMw: undefined,
@@ -210,10 +218,10 @@ function CollectBtn({
 
 			localStorage.setItem(
 				"collectingPosts",
-				JSON.stringify([...collectingPosts, relayingPost])
+				JSON.stringify([...indexingPosts, relayingPost])
 			);
 			/* Set the collectingPosts in the state variables */
-			setCollectingPosts([...collectingPosts, relayingPost]);
+			setIndexingPosts([...indexingPosts, relayingPost]);
 
 			/* Display success message */
       		toast("Your essence is being relayed...", {icon:'⏳'}) //info("Your essence is being relayed.");

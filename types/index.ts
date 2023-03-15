@@ -42,14 +42,14 @@ export interface IAuthContext {
 	profiles: IAccountCard[];
 	indexingPosts: IPostCard[];
 	isLoggedIn: boolean;
-	collectingPosts: IPostCard[];
+	// collectingPosts: IPostCard[];
 	setAccessToken: (accessToken: string | undefined) => void;
 	setPrimaryProfile: (primaryProfile: IPrimaryProfileCard | undefined) => void;
 	setPostCount: (postCount: number) => void;
 	setPosts: (posts: IPostCard[]) => void;
 	setProfiles: (profiles: IAccountCard[]) => void;
 	setIndexingPosts: (indexingPosts: IPostCard[]) => void;
-	setCollectingPosts: (collectingPosts: IPostCard[]) => void;
+	// setCollectingPosts: (collectingPosts: IPostCard[]) => void;
 	connectWallet: () => Promise<Web3Provider>;
 	checkNetwork: (provider: Web3Provider) => Promise<void>;
 	setIsLoggedIn: (isLoggedIn: boolean) => void;
