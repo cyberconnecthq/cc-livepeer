@@ -1,17 +1,19 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/auth";
 import { IPrimaryProfileCard } from "../../types";
 import { parseURL } from "../../utils";
-
+import { Tooltip, Text } from "@nextui-org/react";
 
 export default function CustomConnectButton({handle, avatar, metadata} : IPrimaryProfileCard) {
     const {primaryProfile, address} =  useContext(AuthContext)
-        const [src, setSrc] = useState(parseURL(avatar));
-        const [data, setData] = useState({
-            name: "",
-            bio: "",
-        });
+    const router = useRouter();
+    const [src, setSrc] = useState(parseURL(avatar));
+    const [data, setData] = useState({
+        name: "",
+        bio: "",
+    });
 
         useEffect(() => {
             if (!metadata) return;
@@ -126,6 +128,16 @@ export default function CustomConnectButton({handle, avatar, metadata} : IPrimar
                           ? ` (${account.displayBalance})`
                           : ''} */}
                       </button>
+                      {!handle && (
+                          <Tooltip content={ <Text b>You need a ccProfile <br></br> to upload & collect content</Text>} placement="bottom">
+                            <button
+                              className="flex flex-row items-center  justify-between  rounded-lg bg-green-500 py-2 px-4 text-white hover:bg-green-700"
+                              onClick={() => router.push("https://testnet.cyberconnect.me/")}
+                            >
+                              Mint your Free ccProfile now!
+                            </button>
+                          </Tooltip>
+                        )}
                     </div>
                   );
                 })()}

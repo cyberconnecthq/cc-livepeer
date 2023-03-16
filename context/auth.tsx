@@ -21,6 +21,7 @@ import { useLazyQuery } from "@apollo/client";
 import { useAccount } from "wagmi";
 import { ACCESS_TOKEN_KEY, ESSENCE_APP_ID, REFRESH_TOKEN_KEY, WALLET_KEY, DOMAIN } from '../constants'
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 // This AuthContext is used to store the authentication state as well as the indexing state of essences and connected profiles
 export const AuthContext = createContext<IAuthContext>({
@@ -28,16 +29,10 @@ export const AuthContext = createContext<IAuthContext>({
 	accessToken: undefined,
 	primaryProfile: undefined,
 	indexingPosts: [],
-	postCount: 0,
-	posts: [],
 	profiles: [],
-	// collectingPosts: [],
 	setAccessToken: () => { },
 	setPrimaryProfile: () => { },
 	setIndexingPosts: () => { },
-	// setCollectingPosts: () => { },
-	setPostCount: () => { },
-	setPosts: () => { },
 	setProfiles: () => { },
 	connectWallet: async () => new Promise(() => { }),
 	checkNetwork: async () => new Promise(() => { }),
@@ -47,11 +42,22 @@ export const AuthContext = createContext<IAuthContext>({
 AuthContext.displayName = "AuthContext";
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
+	const { address: wagmiAddress, status } = useAccount({
+		onConnect() {
+			setAddress(wagmiAddress)
+		},
+		onDisconnect() {
+		  setIsLoggedIn(false)
+		},
+		
+	  })
+	
+	const router = useRouter()
 	/* State variable to store the provider */
 	const [provider, setProvider] = useState<Web3Provider | undefined>(undefined);
 
 	/* State variable to store the address */
-	// const [address, setAddress] = useState<string | undefined>(undefined);
+	const [address, setAddress] = useState<string | undefined>(wagmiAddress);
 
 	/* State variable to store the access token */
 	const [accessToken, setAccessToken] = useState<string | undefined>(undefined);
@@ -61,15 +67,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 		IPrimaryProfileCard | undefined
 	>(undefined);
 
-	/* State variable to store the initial number of posts */
-	const [postCount, setPostCount] = useState<number>(0);
-
-
 	/* State variable to store indexing posts */
 	const [indexingPosts, setIndexingPosts] = useState<IPostCard[]>([]);
-
-	/* State variable to store the posts */
-	const [posts, setPosts] = useState<IPostCard[]>([]);
 
 	/* State variable to store the profiles */
 	const [profiles, setProfiles] = useState<IAccountCard[]>([]);
@@ -78,12 +77,10 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>(undefined)
 	
 	
-	const { address, status } = useAccount({
-		onDisconnect() {
-		  setIsLoggedIn(false)
-		},
-	  })
+	
 	useEffect(() => {
+		
+
 		setIsLoggedIn(
 		  address &&
 			status === 'connected' &&
@@ -93,40 +90,11 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	  }, [address, status])
 
 	useEffect(() => {
-		const fetch = async () => {
-			try {
-				/* Fetch primary profile posts */
-				let query = useCancellableQuery({
-					query: PRIMARY_PROFILE_ESSENCES,
-					variables: {
-						address: address,
-						appId: ESSENCE_APP_ID
-					},
-				});
-				const res = await query;
-
-				/* Get the primary profile */
-				const primaryProfile = res?.data?.address?.wallet?.primaryProfile;
-
-				/* Get the posts */
-				const edges = primaryProfile?.essences?.edges;
-				const nodes = edges?.map((edge: any) => edge?.node) || [];
-
-				/* Get the total count of posts */
-				const count = primaryProfile?.essences?.totalCount;
-				/* Set the initial posts */
-				setPosts([...nodes]);
-
-				/* Set the initial number of posts */
-				setPostCount(count);
-			} catch (error) {
-				/* Display error message */
-				console.error(error);
-			}
-		};
-
-		async function sync() {
-			indexingPosts.forEach(async (post: any) => {
+		let _indexingPosts = indexingPosts
+		
+		async function sync(indexingPostsParam) {
+			
+			indexingPostsParam.forEach(async (post: any) => {
 				const res = await getRelayActionStatus({
 					variables: { relayActionId: post.relayActionId },
 					fetchPolicy: "network-only",
@@ -136,47 +104,57 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
 				if (res.data.relayActionStatus.txStatus === "SUCCESS") {
 					toast.success("Post successfully relayed")
-					const filtered = indexingPosts.filter(
+					console.log("indexingPostsParam", indexingPostsParam)
+					_indexingPosts = []
+					const filtered = indexingPostsParam.filter(
 						(item: any) => item.relayActionId !== post.relayActionId
 					);
 					console.log("filtered", filtered)
-					setIndexingPosts(filtered);
-					localStorage.setItem("indexingPosts", JSON.stringify(filtered));
-					await fetch();
+					setIndexingPosts([]);
+					// localStorage.setItem("indexingPosts", JSON.stringify(filtered));
+					// if (post?.metadata_id) {
+					// 	router.push(`/video/${post?.metadata_id}`)
+					// }
+					router.push(`/profile`)
 				} else if ( res.data.relayActionStatus?.reason) {
 					toast.error(res.data.relayActionStatus?.reason)
-					const filtered = indexingPosts.filter(
+					const filtered = indexingPostsParam.filter(
 						(item: any) => item.relayActionId !== post.relayActionId
 					);
 					console.log("filtered", filtered)
-					setIndexingPosts(filtered);
-					localStorage.setItem("indexingPosts", JSON.stringify(filtered));
+					setIndexingPosts([]);
+					// localStorage.setItem("indexingPosts", JSON.stringify([]));
 				}
-
-				if (indexingPosts?.length > 0) {
+				
+				if (_indexingPosts?.length > 0) {
 					await new Promise((resolve) => setTimeout(resolve, 5000));
-					console.log("length of indexing posts", indexingPosts.length)
-					await sync();
+					console.log("length of indexing posts", _indexingPosts.length)
+					console.log("indexing posts", _indexingPosts)
+					await sync(_indexingPosts);
 				}
 			});
 		}
 
 		if (address && indexingPosts?.length > 0) {
-			sync();
+			sync(_indexingPosts);
 		}
 	}, [indexingPosts, address]);
 
 	useEffect(() => {
+		console.log("New useeffect indexingposts: ", indexingPosts)}
+		, [indexingPosts])
+
+	useEffect(() => {
 		const accessToken = localStorage.getItem("accessToken");
 		const address = localStorage.getItem("address");
-		const _indexingPosts = localStorage.getItem("indexingPosts");
+		// const _indexingPosts = localStorage.getItem("indexingPosts");
 		console.log("setting access token and address", accessToken, address);
 		if (accessToken && address) {
 			setAccessToken(accessToken);
 			// setAddress(address);
-			if (_indexingPosts?.length) {
-				setIndexingPosts(JSON.parse(_indexingPosts));
-			}
+			// if (_indexingPosts?.length) {
+			// 	setIndexingPosts(JSON.parse(_indexingPosts));
+			// }
 		}
 	}, []);
 
@@ -226,56 +204,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	}, [address, accessToken]);
 
 
-	useEffect(() => {
-		if (!(address && accessToken)) return;
-
-		let query: any;
-		let timer: number = Date.now() + 1000 * 60 * 10;
-		let mount = true;
-
-		const fetch = async () => {
-			try {
-				/* Fetch primary profile posts */
-				query = useCancellableQuery({
-					query: PRIMARY_PROFILE_ESSENCES,
-					variables: {
-						address: address,
-						appId: ESSENCE_APP_ID,
-					},
-				});
-				const res = await query;
-
-				/* Get the primary profile */
-				const primaryProfile = res?.data?.address?.wallet?.primaryProfile;
-
-				/* Get the posts */
-				const edges = primaryProfile?.essences?.edges;
-				const nodes = edges?.map((edge: any) => edge?.node) || [];
-
-				/* Get the total count of posts */
-				const count = primaryProfile?.essences?.totalCount;
-				/* Set the initial posts */
-				setPosts([...nodes]);
-
-				/* Set the initial number of posts */
-				setPostCount(count);
-			} catch (error) {
-				/* Display error message */
-				console.error(error);
-
-				/* Reset the indexingPosts in the state variable */
-				setIndexingPosts([]);
-			}
-		};
-		fetch();
-
-		return () => {
-			mount = false;
-			if (query) {
-				query.cancel();
-			}
-		};
-	}, [address, accessToken, indexingPosts, postCount]);
 
 	/* Function to connect with MetaMask wallet */
 	const connectWallet = async () => {
@@ -362,15 +290,11 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				address,
 				accessToken,
 				primaryProfile,
-				postCount,
-				posts,
 				profiles,
 				indexingPosts,
 				setAccessToken,
 				setPrimaryProfile,
-				setPostCount,
 				setIndexingPosts,
-				setPosts,
 				setProfiles,
 				checkNetwork,
 				connectWallet,

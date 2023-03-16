@@ -14,10 +14,12 @@ function Landing() {
     // Connect user's wallet
     console.log("isConnected", isConnected);
     console.log("accessToken", accessToken);
-    if (isConnected && accessToken && address && isLoggedIn ) {
+    console.log("address", address);
+    console.log("isLoggedIn", isLoggedIn);
+    if (isConnected && accessToken && isLoggedIn ) {
       window.location.href = "/home";
     }
-  }, [isConnected, primaryProfile]);
+  }, [isConnected, primaryProfile, address, accessToken, isLoggedIn]);
 
   return (
     <>

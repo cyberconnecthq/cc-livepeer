@@ -37,19 +37,13 @@ export interface IAuthContext {
 	address: string | undefined;
 	accessToken: string | undefined;
 	primaryProfile: IPrimaryProfileCard | undefined;
-	postCount: number;
-	posts: IPostCard[];
 	profiles: IAccountCard[];
 	indexingPosts: IPostCard[];
 	isLoggedIn: boolean;
-	// collectingPosts: IPostCard[];
 	setAccessToken: (accessToken: string | undefined) => void;
 	setPrimaryProfile: (primaryProfile: IPrimaryProfileCard | undefined) => void;
-	setPostCount: (postCount: number) => void;
-	setPosts: (posts: IPostCard[]) => void;
 	setProfiles: (profiles: IAccountCard[]) => void;
 	setIndexingPosts: (indexingPosts: IPostCard[]) => void;
-	// setCollectingPosts: (collectingPosts: IPostCard[]) => void;
 	connectWallet: () => Promise<Web3Provider>;
 	checkNetwork: (provider: Web3Provider) => Promise<void>;
 	setIsLoggedIn: (isLoggedIn: boolean) => void;
@@ -165,6 +159,8 @@ export interface IPostCard {
 	isIndexed?: boolean;
 	collectMw?: any;
 	contractAddress?: Address;
+	metadata_id?: string;
+	relayActionId?: string;
 }
 
 export interface IEssenceMwCard {

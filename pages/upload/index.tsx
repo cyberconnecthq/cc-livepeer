@@ -58,9 +58,9 @@ export default function Upload() {
 	const [createRegisterEssenceTypedData] = useMutation(
 		CREATE_REGISTER_ESSENCE_TYPED_DATA
 	);
-	const [getRelayActionStatus] = useLazyQuery(RELAY_ACTION_STATUS);
 	const [relay] = useMutation(RELAY);
-  const [relayActionId, setRelayActionId] = useState<string | null>(null);
+  const [relayingStatus, setRelayingStatus] = useState<boolean>(false);
+  const [relayingResult, setRelayingResult] = useState<boolean>(false);
 
   const handleAmountChange = event => {
     // console.log("Amount::", event.target.value)
@@ -183,9 +183,9 @@ export default function Upload() {
 			});
 
 			const relayActionId = relayResult.data.relay.relayActionId;
-
-			/* Close Post Modal */
-			// handleModal(null, "");
+      setRelayingStatus(true);
+      // relayingStatus
+      // relayingResult
 
 			const relayingPost = {
 				createdBy: {
@@ -203,10 +203,6 @@ export default function Upload() {
 				relayActionId: relayActionId,
 			};
 
-			localStorage.setItem(
-				"indexingPosts",
-				JSON.stringify([...indexingPosts, relayingPost])
-			);
 			/* Set the indexingPosts in the state variables */
 			setIndexingPosts([...indexingPosts, relayingPost]);
 
@@ -245,7 +241,9 @@ export default function Upload() {
     if (progress && progress.length) setVideoProgress(progress?.[0]);
   }, [progress]);
  // UseEffect to save the video to the blockchain
-  useEffect(() => {
+  
+ 
+ useEffect(() => {
     const asyncSaveVideo = async () => {
     // check if the assets are available
     if (assets) {
@@ -260,12 +258,10 @@ export default function Upload() {
         UploadedDate: Date.now().toString()
       };
       console.log("register essence data:", data)
-      // Calling the saveVideo function and passing the metadata object
-      // console.log('data:', data);
-      // setUploadData(data);
-      const relayActionId = await registerEssence(data);
+      
+      await registerEssence(data);
       console.log('uploadData:', uploadData);
-      console.log('relayActionId:', relayActionId);
+      
     }};
     asyncSaveVideo();
   }, [assets]);
@@ -285,7 +281,7 @@ export default function Upload() {
     console.log('title:', title);
     console.log('file:', video);
     // Calling the upload video function
-    // await uploadVideo();
+    // Function to upload the video to Livepeer
     const createAssetResponse = await createAsset?.();
     console.log('createAssetResponse:', createAssetResponse);
 
@@ -298,7 +294,7 @@ export default function Upload() {
     }
   };
 
-  // Function to upload the video to IPFS
+  // Function to upload the thumbnail to IPFS
   const uploadThumbnail = async () => {
     // Passing the file to the pinFileToIPFS function and getting the CID
     const cid = await pinFileToIPFS(thumbnail);
@@ -306,12 +302,8 @@ export default function Upload() {
     return cid;
   };
 
-  // Function to upload the video to Livepeer
-  const uploadVideo = async () => {
-    // Calling the createAsset function from the useCreateAsset hook to upload the video
-    createAsset?.();
-  };
-
+  
+  
   return (
     <Background>
       <p className="text-2xl font-bold text-white">
