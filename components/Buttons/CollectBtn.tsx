@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMutation } from "@apollo/client";
 import { CREATE_COLLECT_ESSENCE_TYPED_DATA, RELAY } from "../../graphql";
 import { AuthContext } from "../../context/auth";
@@ -8,6 +8,7 @@ import  ABI from '../../constants/ABI.json';
 import { BigNumber } from 'ethers';
 import toast from "react-hot-toast";
 import { CC_PROFILE_CONTRACT_ADDRESS } from "../../constants/config";
+import { BUSD_CONTRACT_ADDRESS } from "../../constants";
 import handleCollectEntryError from "../../utils/functions";
 
 function CollectBtn({
@@ -30,34 +31,21 @@ function CollectBtn({
 	const [relay] = useMutation(RELAY);
 	const [stateCollect, setStateCollect] = useState(isCollectedByMe);
 	const [loading, setLoading] = useState(false);	
-	const [totalCollected, setTotalCollected] = useState<BigNumber>();
-	const [isUserCollected, setIsUserCollected] = useState(false);
-	const [readContractsLoading, setReadContractsLoading] = useState(true);
+	// const [totalCollected, setTotalCollected] = useState<BigNumber>();
+	// const [isUserCollected, setIsUserCollected] = useState(false);
+	// const [readContractsLoading, setReadContractsLoading] = useState(true);
 	const [erc20UserBalance, setErc20UserBalance] = useState<BigNumber>();
 
 	const { chain } = useNetwork()
 	const { address: loggedInAddress } = useAccount()
-	let paidCurrency= "" as Address;
-	let paidAmount = "";
+	let paidCurrency= BUSD_CONTRACT_ADDRESS as Address;
+	let paidAmount = "1000000000000000000";
 
-	const collectMwData = JSON.parse(collectMw?.data)
 	if (collectMw?.type !== "COLLECT_FREE") {
+		const collectMwData = JSON.parse(collectMw?.data)
 		paidCurrency = collectMwData?.Currency
 		paidAmount = collectMwData?.Amount
 	}
-	const totalCollectedContract = {
-		address: nftAddress,
-		abi: erc721ABI,
-		functionName: 'totalSupply' as const,
-		chainId: chain.id,
-	  };
-	  const isUserCollectedContract = {
-		address: nftAddress,
-		abi: erc721ABI,
-		functionName: 'balanceOf' as const,
-		chainId: chain.id,
-		args: [loggedInAddress] as [Address],
-	  };
 	  const erc20UserBalanceContract = {
 		address: paidCurrency as Address,
 		abi: erc20ABI,
@@ -65,16 +53,11 @@ function CollectBtn({
 		chainId: chain.id,
 		args: [loggedInAddress] as [Address],
 	  };
-	  const contracts = nftAddress ? [totalCollectedContract, isUserCollectedContract, erc20UserBalanceContract] : [erc20UserBalanceContract];
+	  const contracts = [erc20UserBalanceContract]; //nftAddress ? [totalCollectedContract, isUserCollectedContract, erc20UserBalanceContract] : 
 	  const { data: readsData, refetch: refetchRead } = useContractReads({
 		contracts: contracts,
 		onSuccess(data) {
-		  setReadContractsLoading(false);
-		  const _totalCollected = data[0];
-		  const _isUserCollected = data[1]?.toNumber() > 0;
-		  const _erc20UserBalance = data[-1];
-		  setTotalCollected(_totalCollected);
-		  setIsUserCollected(_isUserCollected);
+		  const _erc20UserBalance = data[0];
 		  setErc20UserBalance(_erc20UserBalance)
 		},
 	  });
@@ -134,6 +117,12 @@ function CollectBtn({
 			console.log('CollectWrite Error', error);
 		}});
 
+	useEffect(() => {
+		/* Set the state to true */	
+		setStateCollect(true);
+		setLoading(false);
+	}, [collectIsSuccess]);
+
 	const handleOnClick = async () => {
 		try {
 			/* Check if the user logged in */
@@ -154,22 +143,19 @@ function CollectBtn({
 			const address = await signer.getAddress();
 			
 			if (collectMw?.type == "COLLECT_PAID") {
+				await refetchRead();
 				if (erc20UserBalance?.lt(BigNumber.from(paidAmount))) {
 					throw Error("You don't have enough balance to collect this essence.");
 				}
-
-				await refetchRead();
-
 				writeAllowance?.()
 				console.log("calling writeCollect")
 				writeCollect?.()
-				
 
 			} else {
 				/* Get the network from the provider */
 				const network = await provider.getNetwork();
 	
-				/* Create typed data in a readable format */
+				/* 1. Create typed data in a readable format */
 				const typedDataResult = await createCollectEssenceTypedData({
 					variables: {
 						input: {
@@ -179,18 +165,17 @@ function CollectBtn({
 						},
 					},
 				});
-	
 				const typedData =
 					typedDataResult.data?.createCollectEssenceTypedData?.typedData;
 				const message = typedData.data;
 				const typedDataID = typedData.id;
 	
-				/* Get the signature for the message signed with the wallet */
+				/* 2. Get the signature for the message signed with the wallet */
 				const params = [address, message];
 				const method = "eth_signTypedData_v4";
 				const signature = await signer.provider.send(method, params);
 	
-				/* Call the relay to broadcast the transaction */
+				/* 3. Call the relay to broadcast the transaction */
 				const relayResult = await relay({
 					variables: {
 						input: {
@@ -199,11 +184,7 @@ function CollectBtn({
 						},
 					},
 				});
-	
 				const relayActionId = relayResult.data.relay.relayActionId;
-	
-				/* Close Post Modal */
-				// handleModal(null, "");
 	
 				const relayingPost = {
 					createdBy: {
@@ -227,18 +208,18 @@ function CollectBtn({
 				);
 				/* Set the indexingPosts in the state variables */
 				setIndexingPosts([...indexingPosts, relayingPost]);
+				/* Display success message */
+				  toast("Your essence is being relayed...", {icon:'⏳'})
+	
+				/* Set the state to true */
+				setStateCollect(true);
+				setLoading(false);
+	
+				/* Display success message */
+				toast.success("Post was collected!");
 			}
 	
 
-			/* Display success message */
-      		toast("Your essence is being relayed...", {icon:'⏳'}) //info("Your essence is being relayed.");
-
-			/* Set the state to true */
-			setStateCollect(true);
-			setLoading(false);
-
-			/* Display success message */
-			toast.success("Post was collected!");
 		} catch (error) {
 			/* Display error message */
 			const message = error.message as string;

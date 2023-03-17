@@ -31,16 +31,11 @@ export default function Video() {
       fetchPolicy: 'network-only',
     })
       .then(({ data }) => {
-        console.log('EssenceByID video page res:', data)
         const currentEssence = data?.essenceByFilter[0] || {}
-        console.log("currentEssence", currentEssence)
         setEssence(currentEssence)
         const parsedVideos = data.essenceByFilter.map((essence: any) => essenceResponseToVideo(essence));
-        console.log("parsedVideos", parsedVideos)
         const video = parsedVideos.find((video) => video.id === id)
-        console.log("setting video", video)
         setVideo(video)
-        console.log("Category", video.category)
       })
       .catch((err) => {
         console.log('err', err)
@@ -56,7 +51,6 @@ export default function Video() {
       fetchPolicy: 'network-only',
     })
       .then(({ data }) => {
-        console.log('GET_ALL_ESSENCE_VIDEOS video page res:', data)
         const essenceNodes = data.essencesBy?.edges.map((edge: any) => edge.node) || [];
         const parsedVideos = essenceNodes.map((essence: any) => essenceResponseToVideo(essence));
         setRelatedVideos(parsedVideos.filter((v) => v.id !== id))
