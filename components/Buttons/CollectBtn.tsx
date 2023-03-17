@@ -44,8 +44,6 @@ function CollectBtn({
 	if (collectMw?.type !== "COLLECT_FREE") {
 		paidCurrency = collectMwData?.Currency
 		paidAmount = collectMwData?.Amount
-		// console.log("paidCurrency", paidCurrency);
-		// console.log("paidAmount", paidAmount);
 	}
 	const totalCollectedContract = {
 		address: nftAddress,
@@ -67,21 +65,14 @@ function CollectBtn({
 		chainId: chain.id,
 		args: [loggedInAddress] as [Address],
 	  };
-	//   console.log("totalCollectedContract", totalCollectedContract);
-	//   console.log("isUserCollectedContract", isUserCollectedContract);
-	//   console.log("erc20UserBalanceContract", erc20UserBalanceContract);
 	  const contracts = nftAddress ? [totalCollectedContract, isUserCollectedContract, erc20UserBalanceContract] : [erc20UserBalanceContract];
 	  const { data: readsData, refetch: refetchRead } = useContractReads({
 		contracts: contracts,
 		onSuccess(data) {
-		//   console.log("data", data);
 		  setReadContractsLoading(false);
 		  const _totalCollected = data[0];
 		  const _isUserCollected = data[1]?.toNumber() > 0;
 		  const _erc20UserBalance = data[-1];
-		//   console.log("totalCollected", _totalCollected.toString());
-		//   console.log("isUserCollected", _isUserCollected);
-		//   console.log("erc20UserBalance", _erc20UserBalance);
 		  setTotalCollected(_totalCollected);
 		  setIsUserCollected(_isUserCollected);
 		  setErc20UserBalance(_erc20UserBalance)
@@ -98,12 +89,10 @@ function CollectBtn({
 		}],
 		
 	  })
-	// console.log("erc20Config", erc20Config)
 	const { write: writeAllowance, data: erc20Data, isLoading: erc20IsLoading, isSuccess: erc20IsSuccess} = useContractWrite(erc20Config)
 	const { isLoading, isSuccess } = useWaitForTransaction({
 		hash: erc20Data?.hash,
 	  })
-	// console.log("loggedInAddress", loggedInAddress ,"profileID", profileID, "essenceID", essenceID, typeof profileID, typeof essenceID);
 	const { config: collectConfig } = usePrepareContractWrite({
 		address: CC_PROFILE_CONTRACT_ADDRESS[chain.id] as Address,
 		abi: ABI,
@@ -113,14 +102,12 @@ function CollectBtn({
 			gasLimit: 1300000,
 		},],
 		onError: async function (error) {
-		//   console.log('Prepare contract write for collect error:', error);
 		  const message = handleCollectEntryError(error);
 		  toast.error(message);
 		  setLoading(false);
 		  return;
 		},
 	  });
-	//   console.log("collectConfig", collectConfig)
 	  const {
 		data: collectData,
 		write: writeCollect,

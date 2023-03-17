@@ -15,8 +15,7 @@ import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from 'wagmi/providers/public'
 
-// bsc.name = 'BNB Chain'
-export const availableChains = [bscTestnet]; // mainnet, goerli
+export const availableChains = [bscTestnet]; 
 
 export const CC_PROFILE_CONTRACT_ADDRESS = {
   [bsc.id]: '0x2723522702093601e6360cae665518c4f63e9da6',
@@ -24,26 +23,14 @@ export const CC_PROFILE_CONTRACT_ADDRESS = {
 };
 
 const NODEREAL_RPCS = {
-  [mainnet.id]: {
-    http: `https://eth-mainnet.nodereal.io/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
-    // webSocket: `wss://eth-mainnet.nodereal.io/ws/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
-  },
-  [goerli.id]: {
-    http: `https://eth-goerli.nodereal.io/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
-    // webSocket: `wss://eth-goerli.nodereal.io/ws/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
-  },
   [bsc.id]: {
     http: `https://bsc-mainnet.nodereal.io/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
-    // webSocket: `wss://bsc-mainnet.nodereal.io/ws/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
   },
   [bscTestnet.id]: {
     http: `https://bsc-testnet.nodereal.io/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
-    // webSocket: `wss://bsc-testnet.nodereal.io/ws/v1/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}`,
   },
 }
 const rpc = {
-  // [mainnet.id]: NODEREAL_RPCS[mainnet.id].http,
-  // [goerli.id]: NODEREAL_RPCS[goerli.id].http,
   [bsc.id]: NODEREAL_RPCS[bsc.id].http,
   [bscTestnet.id]: NODEREAL_RPCS[bscTestnet.id].http,
 }
@@ -73,7 +60,6 @@ const connectors = connectorsForWallets([
       walletConnectWallet({ chains }),
       rainbowWallet({ chains }),
       coinbaseWallet({ chains, appName: 'CyberConnect' }),
-      // argentWallet({ chains }),
       trustWallet({ chains }),
     ],
   },

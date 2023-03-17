@@ -37,12 +37,10 @@ export interface IAuthContext {
 	address: string | undefined;
 	accessToken: string | undefined;
 	primaryProfile: IPrimaryProfileCard | undefined;
-	profiles: IAccountCard[];
 	indexingPosts: IPostCard[];
 	isLoggedIn: boolean;
 	setAccessToken: (accessToken: string | undefined) => void;
 	setPrimaryProfile: (primaryProfile: IPrimaryProfileCard | undefined) => void;
-	setProfiles: (profiles: IAccountCard[]) => void;
 	setIndexingPosts: (indexingPosts: IPostCard[]) => void;
 	connectWallet: () => Promise<Web3Provider>;
 	checkNetwork: (provider: Web3Provider) => Promise<void>;
